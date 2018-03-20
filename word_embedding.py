@@ -1,5 +1,6 @@
 import tensorflow as tf
 import numpy as np
+import re
 
 # corpus_raw = 'He is the king . The king is royal . She is the royal  queen '
 corpus_raw = ""
@@ -17,7 +18,9 @@ print("Embedding Finished...")
 corpus_raw = corpus_raw.lower()
 
 words = []
-for word in corpus_raw.split():
+regex = r'\b\w+\b'
+processed_corpus = re.findall(regex, corpus_raw);
+for word in processed_corpus:
     if word != '.': # because we don't want to treat . as a word
         words.append(word)
 
@@ -28,19 +31,22 @@ vocab_size = len(words) # gives the total number of unique words
 print("vocab: ")
 print(vocab_size)
 
-for i,word in enumerate(words):
-    word2int[word] = i
-    int2word[i] = word
+with open('WordID.txt', 'w') as out:
+    for i,word in enumerate(words):
+            word2int[word] = str(i)
+            int2word[i] = str(word)
+            out.writelines(str(i) + " " + str(word) + "\n")
 
-print("65")
-print(word2int["65"])
+# print("625")
+# print(word2int["625"])
 # print(int2word["3451"])
 
 # raw sentences is a list of sentences.
-raw_sentences = corpus_raw.split('.')
+# raw_sentences = re.split('. | ! | ? ', corpus_raw);
+raw_sentences = corpus_raw.split('. ')
 sentences = []
 for sentence in raw_sentences:
-    sentences.append(sentence.split())
+    sentences.append(re.findall(regex, sentence))
 
 WINDOW_SIZE = 2
 
@@ -60,17 +66,23 @@ def to_one_hot(data_point_index, vocab_size):
 x_train = [] # input word
 y_train = [] # output word
 
+print("word2int")
+print(word2int)
+
 for data_word in data:
-    print("dataword: ")
-    print(data_word)
-    print(data_word[0])
-    print(data_word[1])
-    print("")
+    # print("dataword: ")
+    # print(data_word)
+    # print(data_word[0])
+    # print(data_word[1])
+    # print("")
 
     index_x = word2int[data_word[0]]
     index_y = word2int[data_word[1]]
-    x_train.append(to_one_hot(index_x, vocab_size))
-    y_train.append(to_one_hot(index_y, vocab_size))
+    x_train.append(to_one_hot(int(index_x), vocab_size))
+    y_train.append(to_one_hot(int(index_y), vocab_size))
+
+print("x_train")
+print("y_train")
 
 # convert them to numpy arrays
 x_train = np.asarray(x_train)
@@ -134,14 +146,20 @@ from sklearn import preprocessing
 normalizer = preprocessing.Normalizer()
 vectors =  normalizer.fit_transform(vectors, 'l2')
 
-print(vectors)
+with open("vector.txt", "w") as vec:
+    print("Writing vectors...")
+    vectorList = str(vectors).split(',')
+    for wordVec in vectorList:
+        vec.write(wordVec)
+    print("Finish vectors output")
+# print(vectors)
 
 import matplotlib.pyplot as plt
 
 
 fig, ax = plt.subplots()
-print(words)
+# print(words)
 for word in words:
-    print(word, vectors[word2int[word]][1])
+    # print(word, vectors[word2int[word]][1])
     ax.annotate(word, (vectors[word2int[word]][0],vectors[word2int[word]][1] ))
 plt.show()
