@@ -1,6 +1,7 @@
 import tensorflow as tf
 import numpy as np
 import re
+from scipy import sparse
 
 # corpus_raw = 'He is the king . The king is royal . She is the royal  queen '
 corpus_raw = ""
@@ -88,9 +89,13 @@ print("y_train")
 x_train = np.asarray(x_train)
 y_train = np.asarray(y_train)
 
+print("Finish asarray")
+
 # making placeholders for x_train and y_train
 x = tf.placeholder(tf.float32, shape=(None, vocab_size))
 y_label = tf.placeholder(tf.float32, shape=(None, vocab_size))
+
+print("Finish placeholder")
 
 EMBEDDING_DIM = 5 # you can choose your own number
 W1 = tf.Variable(tf.random_normal([vocab_size, EMBEDDING_DIM]))
@@ -101,11 +106,13 @@ W2 = tf.Variable(tf.random_normal([EMBEDDING_DIM, vocab_size]))
 b2 = tf.Variable(tf.random_normal([vocab_size]))
 prediction = tf.nn.softmax(tf.add( tf.matmul(hidden_representation, W2), b2))
 
+print("Finish prediction")
 
 sess = tf.Session()
 init = tf.global_variables_initializer()
 sess.run(init) #make sure you do this!
 
+print("Start reduce_mean")
 # define the loss function:
 cross_entropy_loss = tf.reduce_mean(-tf.reduce_sum(y_label * tf.log(prediction), reduction_indices=[1]))
 
@@ -115,11 +122,14 @@ train_step = tf.train.GradientDescentOptimizer(0.1).minimize(cross_entropy_loss)
 n_iters = 10000
 # train for n_iter iterations
 
+print("Start n_iters")
 for _ in range(n_iters):
     sess.run(train_step, feed_dict={x: x_train, y_label: y_train})
     #print('loss is : ', sess.run(cross_entropy_loss, feed_dict={x: x_train, y_label: y_train}))
 
 vectors = sess.run(W1 + b1)
+
+print("Finish session")
 
 def euclidean_dist(vec1, vec2):
     return np.sqrt(np.sum((vec1-vec2)**2))
