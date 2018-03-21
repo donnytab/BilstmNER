@@ -1,7 +1,7 @@
 import tensorflow as tf
 import numpy as np
 import re
-from scipy import sparse
+from scipy.sparse import csc_matrix
 
 # corpus_raw = 'He is the king . The king is royal . She is the royal  queen '
 corpus_raw = ""
@@ -58,17 +58,32 @@ for sentence in sentences:
             if nb_word != word:
                 data.append([word, nb_word])
 
+x_train = []  # input word
+y_train = []  # output word
+one_hot_x_row = []
+one_hot_x_col = []
+one_hot_x_data = []
+one_hot_y_row = []
+one_hot_y_col = []
+one_hot_y_data = []
+
+print("word2int")
+print(word2int)
+
+words_data_size = len(data)
+index = 0
+
 # function to convert numbers to one hot vectors
 def to_one_hot(data_point_index, vocab_size):
     temp = np.zeros(vocab_size)
     temp[data_point_index] = 1
     return temp
 
-x_train = [] # input word
-y_train = [] # output word
-
-print("word2int")
-print(word2int)
+# function to convert numbers to one hot vectors
+def to_one_hot_compressed(data_row, data_col, one_hot_row, one_hot_col, one_hot_data):
+    one_hot_row.append(data_row)
+    one_hot_col.append(data_col)
+    one_hot_data.append(1)
 
 for data_word in data:
     # print("dataword: ")
@@ -79,17 +94,21 @@ for data_word in data:
 
     index_x = word2int[data_word[0]]
     index_y = word2int[data_word[1]]
-    x_train.append(to_one_hot(int(index_x), vocab_size))
-    y_train.append(to_one_hot(int(index_y), vocab_size))
+    # x_train.append(to_one_hot(int(index_x), vocab_size))
+    # y_train.append(to_one_hot(int(index_y), vocab_size))
+    to_one_hot_compressed(index, int(index_x), one_hot_x_row, one_hot_x_col, one_hot_x_data)
+    to_one_hot_compressed(index, int(index_y), one_hot_y_row, one_hot_y_col, one_hot_y_data)
+    index += 1
 
-print("x_train")
-print("y_train")
+# print("x_train")
+# print("y_train")
 
 # convert them to numpy arrays
-x_train = np.asarray(x_train)
-y_train = np.asarray(y_train)
-
-print("Finish asarray")
+# x_train = np.asarray(x_train)
+# y_train = np.asarray(y_train)
+x_train = csc_matrix((one_hot_x_data, (one_hot_x_row, one_hot_x_col)), shape = (words_data_size, vocab_size)).toarray()
+y_train = csc_matrix((one_hot_y_data, (one_hot_y_row, one_hot_y_col)), shape = (words_data_size, vocab_size)).toarray()
+print("Finish csc_matrix")
 
 # making placeholders for x_train and y_train
 x = tf.placeholder(tf.float32, shape=(None, vocab_size))
@@ -119,7 +138,7 @@ cross_entropy_loss = tf.reduce_mean(-tf.reduce_sum(y_label * tf.log(prediction),
 # define the training step:
 train_step = tf.train.GradientDescentOptimizer(0.1).minimize(cross_entropy_loss)
 
-n_iters = 10000
+n_iters = 10
 # train for n_iter iterations
 
 print("Start n_iters")
