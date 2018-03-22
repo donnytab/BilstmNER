@@ -73,6 +73,9 @@ print(word2int)
 words_data_size = len(data)
 index = 0
 
+print("words_data_size")
+print(words_data_size)
+
 # function to convert numbers to one hot vectors
 def to_one_hot(data_point_index, vocab_size):
     temp = np.zeros(vocab_size)
@@ -100,14 +103,21 @@ for data_word in data:
     to_one_hot_compressed(index, int(index_y), one_hot_y_row, one_hot_y_col, one_hot_y_data)
     index += 1
 
-# print("x_train")
-# print("y_train")
+    if index > 100:
+        break
 
 # convert them to numpy arrays
 # x_train = np.asarray(x_train)
 # y_train = np.asarray(y_train)
-x_train = csc_matrix((one_hot_x_data, (one_hot_x_row, one_hot_x_col)), shape = (words_data_size, vocab_size)).toarray()
-y_train = csc_matrix((one_hot_y_data, (one_hot_y_row, one_hot_y_col)), shape = (words_data_size, vocab_size)).toarray()
+# x_train = csc_matrix((one_hot_x_data, (one_hot_x_row, one_hot_x_col)), shape = (words_data_size, vocab_size)).toarray()
+# y_train = csc_matrix((one_hot_y_data, (one_hot_y_row, one_hot_y_col)), shape = (words_data_size, vocab_size)).toarray()
+x_train = csc_matrix((one_hot_x_data, (one_hot_x_row, one_hot_x_col)), shape = (index, vocab_size)).toarray()
+y_train = csc_matrix((one_hot_y_data, (one_hot_y_row, one_hot_y_col)), shape = (index, vocab_size)).toarray()
+# print(x_train)
+print("x_train")
+print(len(x_train))
+print("y_train")
+print(len(y_train))
 print("Finish csc_matrix")
 
 # making placeholders for x_train and y_train
@@ -134,17 +144,19 @@ sess.run(init) #make sure you do this!
 print("Start reduce_mean")
 # define the loss function:
 cross_entropy_loss = tf.reduce_mean(-tf.reduce_sum(y_label * tf.log(prediction), reduction_indices=[1]))
+print("cross_entropy_loss")
+print(cross_entropy_loss)
 
 # define the training step:
 train_step = tf.train.GradientDescentOptimizer(0.1).minimize(cross_entropy_loss)
 
-n_iters = 10
+n_iters = 5000
 # train for n_iter iterations
 
 print("Start n_iters")
-for _ in range(n_iters):
+for i in range(n_iters):
     sess.run(train_step, feed_dict={x: x_train, y_label: y_train})
-    #print('loss is : ', sess.run(cross_entropy_loss, feed_dict={x: x_train, y_label: y_train}))
+    print('loss is : ', sess.run(cross_entropy_loss, feed_dict={x: x_train, y_label: y_train}), " {", i, "}")
 
 vectors = sess.run(W1 + b1)
 
@@ -154,7 +166,7 @@ def euclidean_dist(vec1, vec2):
     return np.sqrt(np.sum((vec1-vec2)**2))
 
 def find_closest(word_index, vectors):
-    min_dist = 10000 # to act like positive infinity
+    min_dist = 5000 # to act like positive infinity
     min_index = -1
     query_vector = vectors[word_index]
     for index, vector in enumerate(vectors):
@@ -164,31 +176,35 @@ def find_closest(word_index, vectors):
     return min_index
 
 
-from sklearn.manifold import TSNE
-
-model = TSNE(n_components=2, random_state=0)
-np.set_printoptions(suppress=True)
-vectors = model.fit_transform(vectors)
-
-from sklearn import preprocessing
-
-normalizer = preprocessing.Normalizer()
-vectors =  normalizer.fit_transform(vectors, 'l2')
+# from sklearn.manifold import TSNE
+#
+# model = TSNE(n_components=2, random_state=0)
+# np.set_printoptions(suppress=True)
+# vectors = model.fit_transform(vectors)
+#
+# from sklearn import preprocessing
+#
+# normalizer = preprocessing.Normalizer()
+# vectors =  normalizer.fit_transform(vectors, 'l2')
 
 with open("vector.txt", "w") as vec:
     print("Writing vectors...")
-    vectorList = str(vectors).split(',')
-    for wordVec in vectorList:
-        vec.write(wordVec)
+    # vectorList = str(vectors).split(',')
+    # print("Final vector size:")
+    # print(len(vectorList))
+    # for wordVec in vectorList:
+    #     vec.write(wordVec)
+    vec.write(str(vectors))
     print("Finish vectors output")
+    print(vectors)
 # print(vectors)
 
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 
 
-fig, ax = plt.subplots()
+# fig, ax = plt.subplots()
 # print(words)
-for word in words:
-    # print(word, vectors[word2int[word]][1])
-    ax.annotate(word, (vectors[word2int[word]][0],vectors[word2int[word]][1] ))
-plt.show()
+# for word in words:
+#     # print(word, vectors[word2int[word]][1])
+#     ax.annotate(word, (vectors[word2int[word]][0],vectors[word2int[word]][1] ))
+# plt.show()
