@@ -411,3 +411,61 @@ class NERModel():
                 self.train_op = optimizer.apply_gradients(zip(grads, vs))
             else:
                 self.train_op = optimizer.minimize(loss)
+
+
+    def add_summary(self):
+        """Defines variables for Tensorboard
+
+        Args:
+            dir_output: (string) where the results are written
+
+        """
+        self.merged      = tf.summary.merge_all()
+        self.file_writer = tf.summary.FileWriter(self.config.dir_output,
+                self.sess.graph)
+
+
+    def train(self, train, dev):
+        """Performs training with early stopping and lr exponential decay
+
+        Args:
+            train: dataset that yields tuple of (sentences, tags)
+            dev: dataset
+
+        """
+        best_score = 0
+        nepoch_no_imprv = 0 # for early stopping
+        self.add_summary() # tensorboard
+
+        for epoch in range(self.config.nepochs):
+            self.logger.info("Epoch {:} out of {:}".format(epoch + 1,
+                        self.config.nepochs))
+
+            score = self.run_epoch(train, dev, epoch)
+            self.config.lr *= self.config.lr_decay # decay learning rate
+
+            # early stopping and saving best parameters
+            if score >= best_score:
+                nepoch_no_imprv = 0
+                self.save_session()
+                best_score = score
+                self.logger.info("- new best score!")
+            else:
+                nepoch_no_imprv += 1
+                if nepoch_no_imprv >= self.config.nepoch_no_imprv:
+                    self.logger.info("- early stopping {} epochs without "\
+                            "improvement".format(nepoch_no_imprv))
+                    break
+
+    def evaluate(self, test):
+        """Evaluate model on test set
+
+        Args:
+            test: instance of class Dataset
+
+        """
+        self.logger.info("Testing model over test set")
+        metrics = self.run_evaluate(test)
+        msg = " - ".join(["{} {:04.2f}".format(k, v)
+                for k, v in metrics.items()])
+        self.logger.info(msg)
