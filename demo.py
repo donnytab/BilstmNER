@@ -11,7 +11,7 @@ import math
 import os
 import random
 import zipfile
-
+import re
 import numpy as np
 # from six.moves import urllib
 import urllib.request
@@ -45,8 +45,29 @@ def read_data(filename):
     """Extract the first file enclosed in a zip file as a list of words"""
     with zipfile.ZipFile(filename) as f:
         data = tf.compat.as_str(f.read(f.namelist()[0])).split()
+
+    print("Namelist")
+    print(f.namelist())
     return data
 
+######################################
+# words = []
+# regex = r'\b\w+\b'
+# corpus_raw = ""
+# file = open("CoNLL2003/train.txt", "r")
+# if file:
+#     for row in file:
+#         word = row.split(" ", 1)[0]
+#         if word != "-DOCSTART-":
+#             corpus_raw = corpus_raw + word + " "
+#
+# corpus_raw = corpus_raw.lower()
+# processed_corpus = re.findall(regex, corpus_raw);
+# for word in processed_corpus:
+#     if word != '.': # Remove .
+#         words.append(word)
+# words = set(words) # Remove duplicate words
+######################################
 
 words = read_data(filename)
 print('Data size', len(words))
@@ -72,6 +93,13 @@ def build_dataset(words):
         data.append(index)
     count[0][1] = unk_count
     reverse_dictionary = dict(zip(dictionary.values(), dictionary.keys()))
+    # print("reverse_dictionary")
+    # print(reverse_dictionary)
+    with open('WordID.txt', 'w') as out:
+        dict_str = str(reverse_dictionary).split(",")
+        print("length: ", len(dict_str))
+        for value in dict_str:
+            out.writelines(value+"\n")
     return data, count, dictionary, reverse_dictionary
 
 
