@@ -4,8 +4,7 @@ import tensorflow as tf
 
 from .data_utils import minibatches, pad_sequences, get_chunks
 
-class NERModel(BaseModel):
-    """Specialized class of Model for NER"""
+class NERModel():
 
     def __init__(self, config):
         # super(NERModel, self).__init__(config)
@@ -15,6 +14,36 @@ class NERModel(BaseModel):
         self.saver  = None
         self.idx_to_tag = {idx: tag for tag, idx in
                            self.config.vocab_tags.items()}
+
+    def initialize_session(self):
+        """Defines self.sess and initialize the variables"""
+        self.logger.info("Initializing tf session")
+        self.sess = tf.Session()
+        self.sess.run(tf.global_variables_initializer())
+        self.saver = tf.train.Saver()
+
+    def restore_session(self, dir_model):
+        """Reload weights into session
+
+        Args:
+            sess: tf.Session()
+            dir_model: dir with weights
+
+        """
+        self.logger.info("Reloading the latest trained model...")
+        self.saver.restore(self.sess, dir_model)
+
+
+    def save_session(self):
+        """Saves session = weights"""
+        if not os.path.exists(self.config.dir_model):
+            os.makedirs(self.config.dir_model)
+        self.saver.save(self.sess, self.config.dir_model)
+
+
+    def close_session(self):
+        """Closes the session"""
+        self.sess.close()
 
     def add_placeholders(self):
         """Define placeholders = entries to computational graph"""
