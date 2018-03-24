@@ -2,7 +2,7 @@ import numpy as np
 import os
 import tensorflow as tf
 
-from .data_utils import minibatches, pad_sequences, get_chunks
+from preprocess import minibatches, pad_sequences, get_chunks
 
 class NERModel():
 
