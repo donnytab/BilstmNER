@@ -50,24 +50,24 @@ class Config():
     dim_char = 100
 
     # glove files
-    filename_glove = "data/glove.6B/glove.6B.{}d.txt".format(dim_word)
+    filename_glove = "../glove.6B/glove.6B.{}d.txt".format(dim_word)
     # trimmed embeddings (created from glove_filename with build_data.py)
-    filename_trimmed = "data/glove.6B.{}d.trimmed.npz".format(dim_word)
+    filename_trimmed = "../glove.6B.{}d.trimmed.npz".format(dim_word)
     use_pretrained = True
 
     # dataset
-    filename_dev = "data/coNLL/eng/eng.testa.iob"
-    filename_test = "data/coNLL/eng/eng.testb.iob"
-    filename_train = "data/coNLL/eng/eng.train.iob"
+    filename_dev = "CoNLL2003/eng/eng.testa.iob"
+    filename_test = "CoNLL2003/eng/eng.testb.iob"
+    filename_train = "CoNLL2003/eng/eng.train.iob"
 
     # filename_dev = filename_test = filename_train = "data/test.txt" # test
 
     max_iter = None  # if not None, max number of examples in Dataset
 
     # vocab (created from dataset with build_data.py)
-    filename_words = "data/words.txt"
-    filename_tags = "data/tags.txt"
-    filename_chars = "data/chars.txt"
+    filename_words = "words.txt"
+    filename_tags = "tags.txt"
+    filename_chars = "chars.txt"
 
     # training
     train_embeddings = False
