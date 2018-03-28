@@ -15,38 +15,25 @@ class NERModel():
         self.idx_to_tag = {idx: tag for tag, idx in
                            self.config.vocab_tags.items()}
 
+    # Initialization
     def initialize_session(self):
-        """Defines self.sess and initialize the variables"""
-        self.logger.info("Initializing tf session")
+        self.logger.info("NER Initialization...")
         self.sess = tf.Session()
         self.sess.run(tf.global_variables_initializer())
         self.saver = tf.train.Saver()
 
-    def restore_session(self, dir_model):
-        """Reload weights into session
-
-        Args:
-            sess: tf.Session()
-            dir_model: dir with weights
-
-        """
-        self.logger.info("Reloading the latest trained model...")
-        self.saver.restore(self.sess, dir_model)
-
-
+    # Save session state
     def save_session(self):
-        """Saves session = weights"""
         if not os.path.exists(self.config.dir_model):
             os.makedirs(self.config.dir_model)
         self.saver.save(self.sess, self.config.dir_model)
 
-
+    # Shutdown session
     def close_session(self):
-        """Closes the session"""
         self.sess.close()
 
+    # Tensorflow Placeholders
     def add_placeholders(self):
-        """Define placeholders = entries to computational graph"""
         # shape = (batch size, max length of sentence in batch)
         self.word_ids = tf.placeholder(tf.int32, shape=[None, None],
                         name="word_ids")
@@ -74,20 +61,8 @@ class NERModel():
                         name="lr")
 
 
+    # Retrieve fed data
     def get_feed_dict(self, words, labels=None, lr=None, dropout=None):
-        """Given some data, pad it and build a feed dictionary
-
-        Args:
-            words: list of sentences. A sentence is a list of ids of a list of
-                words. A word is a list of ids
-            labels: list of ids
-            lr: (float) learning rate
-            dropout: (float) keep prob
-
-        Returns:
-            dict {placeholder: value}
-
-        """
         # perform padding of the given data
         if self.config.use_chars:
             char_ids, word_ids = zip(*words)
@@ -111,6 +86,7 @@ class NERModel():
             labels, _ = pad_sequences(labels, 0)
             feed[self.labels] = labels
 
+        # lr : learning rate
         if lr is not None:
             feed[self.lr] = lr
 
@@ -120,14 +96,8 @@ class NERModel():
         return feed, sequence_lengths
 
 
+    # Add pretrained word vector
     def add_word_embeddings_op(self):
-        """Defines self.word_embeddings
-
-        If self.config.embeddings is not None and is a np array initialized
-        with pre-trained word vectors, the word embeddings is just a look-up
-        and we don't train the vectors. Otherwise, a random matrix with
-        the correct shape is initialized.
-        """
         with tf.variable_scope("words"):
             if self.config.embeddings is None:
                 self.logger.info("WARNING: randomly initializing word vectors")
@@ -182,12 +152,9 @@ class NERModel():
         self.word_embeddings =  tf.nn.dropout(word_embeddings, self.dropout)
 
 
+    # Add vector scores
+    # dimension : number of tags
     def add_logits_op(self):
-        """Defines self.logits
-
-        For each word in each sentence of the batch, it corresponds to a vector
-        of scores, of dimension equal to the number of tags.
-        """
         with tf.variable_scope("bi-lstm"):
             cell_fw = tf.contrib.rnn.LSTMCell(self.config.hidden_size_lstm)
             cell_bw = tf.contrib.rnn.LSTMCell(self.config.hidden_size_lstm)
@@ -209,27 +176,18 @@ class NERModel():
             pred = tf.matmul(output, W) + b
             self.logits = tf.reshape(pred, [-1, nsteps, self.config.ntags])
 
-
+    # Label for prediction
     def add_pred_op(self):
-        """Defines self.labels_pred
-
-        This op is defined only in the case where we don't use a CRF since in
-        that case we can make the prediction "in the graph" (thanks to tf
-        functions in other words). With theCRF, as the inference is coded
-        in python and not in pure tensroflow, we have to make the prediciton
-        outside the graph.
-        """
         if not self.config.use_crf:
             self.labels_pred = tf.cast(tf.argmax(self.logits, axis=-1),
                     tf.int32)
 
-
+    # Use CRF or softmax for loss function
     def add_loss_op(self):
-        """Defines the loss"""
         if self.config.use_crf:
             log_likelihood, trans_params = tf.contrib.crf.crf_log_likelihood(
                     self.logits, self.labels, self.sequence_lengths)
-            self.trans_params = trans_params # need to evaluate it for decoding
+            self.trans_params = trans_params
             self.loss = tf.reduce_mean(-log_likelihood)
         else:
             losses = tf.nn.sparse_softmax_cross_entropy_with_logits(
@@ -238,8 +196,7 @@ class NERModel():
             losses = tf.boolean_mask(losses, mask)
             self.loss = tf.reduce_mean(losses)
 
-        # for tensorboard
-        tf.summary.scalar("loss", self.loss)
+        tf.summary.scalar("loss", self.loss) # Tensorboard visualization
 
 
     def build(self):
@@ -256,16 +213,9 @@ class NERModel():
         self.initialize_session() # now self.sess is defined and vars are init
 
 
+    # words: list of sentences
+    # Generate prediction batches
     def predict_batch(self, words):
-        """
-        Args:
-            words: list of sentences
-
-        Returns:
-            labels_pred: list of labels for each sentence
-            sequence_length
-
-        """
         fd, sequence_lengths = self.get_feed_dict(words, dropout=1.0)
 
         if self.config.use_crf:
@@ -289,18 +239,9 @@ class NERModel():
             return labels_pred, sequence_lengths
 
 
+    # Run training and evaluation on dataset
+    # train, dev: dataset
     def run_epoch(self, train, dev, epoch):
-        """Performs one complete pass over the train set and evaluate on dev
-
-        Args:
-            train: dataset that yields tuple of sentences, tags
-            dev: dataset
-            epoch: (int) index of the current epoch
-
-        Returns:
-            f1: (python float), score to select model on, higher is better
-
-        """
         # # progbar stuff for logging
         batch_size = self.config.batch_size
         nbatches = (len(train) + batch_size - 1) // batch_size
@@ -325,19 +266,11 @@ class NERModel():
                 for k, v in metrics.items()])
         self.logger.info(msg)
 
-        return metrics["f1"]
+        return metrics["f1"]    # return F1 score
 
-
+    # Evaluation
+    # test: test dataset
     def run_evaluate(self, test):
-        """Evaluates performance on test set
-
-        Args:
-            test: dataset that yields tuple of (sentences, tags)
-
-        Returns:
-            metrics: (dict) metrics["acc"] = 98.4, ...
-
-        """
         accs = []
         correct_preds, total_correct, total_preds = 0., 0., 0.
         for words, labels in minibatches(test, self.config.batch_size):
@@ -365,16 +298,8 @@ class NERModel():
         return {"acc": 100*acc, "f1": 100*f1}
 
 
+    # Tags for words in sentences
     def predict(self, words_raw):
-        """Returns list of tags
-
-        Args:
-            words_raw: list of words (string), just one sentence (no batch)
-
-        Returns:
-            preds: list of tags (string), one for each word in the sentence
-
-        """
         words = [self.config.processing_word(w) for w in words_raw]
         if type(words[0]) == tuple:
             words = zip(*words)
@@ -384,12 +309,11 @@ class NERModel():
         return preds
 
 
-    '''
-        performs an update on a batch
-        lr: learning rate
-        lr_method: sgd method name
-        clip: clipping of gradient. If < 0, no clipping
-    '''
+
+    # performs an update on a batch
+    # lr: learning rate
+    # lr_method: sgd method name
+    # clip: clipping of gradient. If < 0, no clipping
     def add_train_op(self, lr_method, lr, loss, clip=-1):
         _lr_m = lr_method.lower() # lower to make sure
 
@@ -412,34 +336,23 @@ class NERModel():
             else:
                 self.train_op = optimizer.minimize(loss)
 
-
+    # Summary for tensorboard
     def add_summary(self):
-        """Defines variables for Tensorboard
-
-        Args:
-            dir_output: (string) where the results are written
-
-        """
         self.merged      = tf.summary.merge_all()
         self.file_writer = tf.summary.FileWriter(self.config.dir_output,
                 self.sess.graph)
 
 
+    # Training based on train (sentences, tags) and dev dataset
     def train(self, train, dev):
-        """Performs training with early stopping and lr exponential decay
 
-        Args:
-            train: dataset that yields tuple of (sentences, tags)
-            dev: dataset
-
-        """
         best_score = 0
         nepoch_no_imprv = 0 # for early stopping
         self.add_summary() # tensorboard
 
         for epoch in range(self.config.nepochs):
-            self.logger.info("Epoch {:} out of {:}".format(epoch + 1,
-                        self.config.nepochs))
+            # self.logger.info("Epoch {:} out of {:}".format(epoch + 1,
+            #             self.config.nepochs))
 
             score = self.run_epoch(train, dev, epoch)
             self.config.lr *= self.config.lr_decay # decay learning rate
@@ -449,21 +362,16 @@ class NERModel():
                 nepoch_no_imprv = 0
                 self.save_session()
                 best_score = score
-                self.logger.info("- new best score!")
+                # self.logger.info("- new best score!")
             else:
                 nepoch_no_imprv += 1
                 if nepoch_no_imprv >= self.config.nepoch_no_imprv:
-                    self.logger.info("- early stopping {} epochs without "\
-                            "improvement".format(nepoch_no_imprv))
+                    # self.logger.info("- early stopping {} epochs without "\
+                    #         "improvement".format(nepoch_no_imprv))
                     break
 
+    # Evaluation based on test dataset
     def evaluate(self, test):
-        """Evaluate model on test set
-
-        Args:
-            test: instance of class Dataset
-
-        """
         self.logger.info("Testing model over test set")
         metrics = self.run_evaluate(test)
         msg = " - ".join(["{} {:04.2f}".format(k, v)
