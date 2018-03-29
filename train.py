@@ -1,6 +1,6 @@
-from model.data_utils import CoNLLDataset
-from model.ner_model import NERModel
-from model.config import Config
+from preprocess import CoNLLDataset
+from bilstm_model import NERModel
+from param import Config
 
 if __name__ == "__main__":
     # create instance of config

@@ -295,6 +295,10 @@ class NERModel():
         f1  = 2 * p * r / (p + r) if correct_preds > 0 else 0
         acc = np.mean(accs)
 
+        # Tensorboard visualization
+        tf.summary.scalar("accuracy", acc)
+        tf.summary.scalar("f1", f1)
+
         return {"acc": 100*acc, "f1": 100*f1}
 
 
