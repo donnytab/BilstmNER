@@ -299,6 +299,8 @@ class NERModel():
         tf.summary.scalar("accuracy", acc)
         tf.summary.scalar("f1", f1)
 
+        print("F1: ", f1)
+
         return {"acc": 100*acc, "f1": 100*f1}
 
 
@@ -341,6 +343,7 @@ class NERModel():
                 self.train_op = optimizer.minimize(loss)
 
     # Summary for tensorboard
+    # Merge all the summaries and write them out
     def add_summary(self):
         self.merged      = tf.summary.merge_all()
         self.file_writer = tf.summary.FileWriter(self.config.dir_output,
