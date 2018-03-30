@@ -11,8 +11,17 @@ tensorboard at: http://localhost:6006
 
 if __name__ == "__main__":
     config = Config()
-    ner_model = NERModel(config)
-    ner_model.build()
+    model = NERModel(config)
+    model.build()
+
+    # create datasets
+    dev   = CoNLLDataset(config.filename_dev, config.processing_word,
+                         config.processing_tag, config.max_iter)
+    train = CoNLLDataset(config.filename_train, config.processing_word,
+                         config.processing_tag, config.max_iter)
+
+    # train model
+    model.train(train, dev)
 
     test = CoNLLDataset(config.filename_test, config.processing_word,config.processing_tag, config.max_iter)
-    ner_model.evaluate(test)
+    model.evaluate(test)
