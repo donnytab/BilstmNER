@@ -19,4 +19,4 @@ if __name__ == "__main__":
                          config.processing_tag, config.max_iter)
 
     # train model
-    model.train(train, dev)
+    model.train(train, train)

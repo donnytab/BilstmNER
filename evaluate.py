@@ -23,5 +23,6 @@ if __name__ == "__main__":
     # train model
     model.train(train, dev)
 
-    test = CoNLLDataset(config.filename_test, config.processing_word,config.processing_tag, config.max_iter)
+    test = CoNLLDataset(config.filename_test, config.processing_word,
+                        config.processing_tag, config.max_iter)
     model.evaluate(test)

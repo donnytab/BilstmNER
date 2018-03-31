@@ -266,6 +266,8 @@ class NERModel():
                 for k, v in metrics.items()])
         self.logger.info(msg)
 
+        # print("metrics: ", metrics)
+
         return metrics["f1"]    # return F1 score
 
     # Evaluation
@@ -283,18 +285,23 @@ class NERModel():
                 lab_pred = lab_pred[:length]
                 accs    += [a==b for (a, b) in zip(lab, lab_pred)]
 
-                # lab_chunks      = set(get_chunks(lab, self.config.vocab_tags))
-                # lab_pred_chunks = set(get_chunks(lab_pred,
-                #                                  self.config.vocab_tags))
+                lab_chunks      = set(get_chunks(lab, self.config.vocab_tags))
+                lab_pred_chunks = set(get_chunks(lab_pred, self.config.vocab_tags))
 
-                # correct_preds += len(lab_chunks & lab_pred_chunks)
-                # total_preds   += len(lab_pred_chunks)
-                # total_correct += len(lab_chunks)
-                correct_preds += len(set(lab) & set(lab_pred))
-                total_preds   += len(set(lab_pred))
-                total_correct += len(set(lab))
+                # print("lab_chunks: ", get_chunks(lab, self.config.vocab_tags))
+                # print("lab_pred_chunks: ", get_chunks(lab_pred, self.config.vocab_tags))
 
-        print("accs : ", accs)
+                correct_preds += len(lab_chunks & lab_pred_chunks)
+                total_preds   += len(lab_pred_chunks)
+                total_correct += len(lab_chunks)
+
+                # correct_preds += len(set(lab) & set(lab_pred))  # tp
+                # total_preds   += len(set(lab_pred)) #
+                # total_correct += len(set(lab))
+
+        # print("lab : ", lab)
+        # print("lab_pred : ", lab_pred)
+        # print("accs : ", accs)
         print("total_preds : ", total_preds)
         print("correct_preds : ", correct_preds)
         print("total_correct : ", total_correct)

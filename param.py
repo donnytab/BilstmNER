@@ -46,8 +46,8 @@ class Config():
     path_log = dir_output + "log.txt"
 
     # embeddings
-    dim_word = 300
-    dim_char = 100
+    dim_word = 100
+    dim_char = 25
 
     # glove files
     filename_glove = "../glove.6B/glove.6B.{}d.txt".format(dim_word)
@@ -56,9 +56,9 @@ class Config():
     use_pretrained = True
 
     # dataset
-    filename_dev = "CoNLL2003/eng/eng.testa.iob"
-    filename_test = "CoNLL2003/eng/eng.testb.iob"
-    filename_train = "CoNLL2003/eng/eng.train.iob"
+    filename_dev = "CoNLL2003/valid.txt"
+    filename_test = "CoNLL2003/test.txt"
+    filename_train = "CoNLL2003/train.txt"
 
     # filename_dev = filename_test = filename_train = "data/test.txt" # test
 
@@ -71,18 +71,18 @@ class Config():
 
     # training
     train_embeddings = False
-    nepochs = 15
+    nepochs = 25
     dropout = 0.5
-    batch_size = 20
-    lr_method = "adam"
-    lr = 0.001
-    lr_decay = 0.9
-    clip = -1  # if negative, no clipping
-    nepoch_no_imprv = 3
+    batch_size = 40
+    lr_method = "sgd"
+    lr = 0.01
+    lr_decay = 1.0
+    clip = 5.0  # if negative, no clipping
+    nepoch_no_imprv = 4
 
     # model hyperparameters
-    hidden_size_char = 100  # lstm on chars
-    hidden_size_lstm = 300  # lstm on word embeddings
+    hidden_size_char = 25  # lstm on chars
+    hidden_size_lstm = 100  # lstm on word embeddings
 
     # NOTE: if both chars and crf, only 1.6x slower on GPU
     use_crf = True  # if crf, training is 1.7x slower on CPU
