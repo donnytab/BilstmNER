@@ -152,9 +152,21 @@ class NERModel():
         self.word_embeddings =  tf.nn.dropout(word_embeddings, self.dropout)
 
 
-    # Add vector scores
-    # dimension : number of tags
-    def add_logits_op(self):
+    # Label for prediction
+    def add_pred_op(self):
+        if not self.config.use_crf:
+            self.labels_pred = tf.cast(tf.argmax(self.logits, axis=-1),
+                    tf.int32)
+
+
+    def build(self):
+        # NER specific functions
+        self.add_placeholders()
+        self.add_word_embeddings_op()
+
+        # self.add_logits_op()
+        # Add vector scores
+        # dimension : number of tags
         with tf.variable_scope("bi-lstm"):
             cell_fw = tf.contrib.rnn.LSTMCell(self.config.hidden_size_lstm)
             cell_bw = tf.contrib.rnn.LSTMCell(self.config.hidden_size_lstm)
@@ -176,20 +188,29 @@ class NERModel():
             pred = tf.matmul(output, W) + b
             self.logits = tf.reshape(pred, [-1, nsteps, self.config.ntags])
 
-    # Label for prediction
-    def add_pred_op(self):
-        if not self.config.use_crf:
-            self.labels_pred = tf.cast(tf.argmax(self.logits, axis=-1),
-                    tf.int32)
+        self.add_pred_op()
 
-    # Use CRF or softmax for loss function
-    def add_loss_op(self):
+
+        # self.add_loss_op()
+        # Use CRF or softmax for loss function
+        # Use L2-SVM
+        if self.config.use_svm:
+            regularization_loss = 0.5 * tf.reduce_sum(tf.square(W))
+            hinge_loss = tf.reduce_sum(tf.square(
+                tf.maximum(
+                    tf.zeros(2*self.config.hidden_size_lstm, self.config.ntags), 1 - y_onehot * output)
+                )
+            )
+            with tf.name_scope("loss"):
+                self.loss = regularization_loss + self.config.svm_c * hinge_loss
+
         if self.config.use_crf:
             log_likelihood, trans_params = tf.contrib.crf.crf_log_likelihood(
                     self.logits, self.labels, self.sequence_lengths)
             self.trans_params = trans_params
             self.loss = tf.reduce_mean(-log_likelihood)
-        else:
+
+        if self.config.use_softmax:
             losses = tf.nn.sparse_softmax_cross_entropy_with_logits(
                     logits=self.logits, labels=self.labels)
             mask = tf.sequence_mask(self.sequence_lengths)
@@ -197,15 +218,6 @@ class NERModel():
             self.loss = tf.reduce_mean(losses)
 
         tf.summary.scalar("loss", self.loss) # Tensorboard visualization
-
-
-    def build(self):
-        # NER specific functions
-        self.add_placeholders()
-        self.add_word_embeddings_op()
-        self.add_logits_op()
-        self.add_pred_op()
-        self.add_loss_op()
 
         # Generic functions that add training op and initialize session
         self.add_train_op(self.config.lr_method, self.lr, self.loss,

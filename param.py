@@ -86,7 +86,10 @@ class Config():
 
     # NOTE: if both chars and crf, only 1.6x slower on GPU
     use_crf = True  # if crf, training is 1.7x slower on CPU
+    use_softmax = False
     use_chars = True  # if char embedding, training is 3.5x slower on CPU
+    use_svm = False
+    svm_c = 2**3 # range from 2^-5 to 2^3
 
 def getLogger(filename):
     logger = logging.getLogger('logger')
