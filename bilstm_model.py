@@ -51,6 +51,7 @@ class NERModel():
                         name="word_lengths")
 
         # shape = (batch size, max length of sentence in batch)
+        # tag_indices
         self.labels = tf.placeholder(tf.int32, shape=[None, None],
                         name="labels")
 
@@ -154,7 +155,7 @@ class NERModel():
 
     # Label for prediction
     def add_pred_op(self):
-        if not self.config.use_crf:
+        if not self.config.use_crf or self.config.use_svm:
             self.labels_pred = tf.cast(tf.argmax(self.logits, axis=-1),
                     tf.int32)
 
@@ -170,7 +171,7 @@ class NERModel():
         with tf.variable_scope("bi-lstm"):
             cell_fw = tf.contrib.rnn.LSTMCell(self.config.hidden_size_lstm)
             cell_bw = tf.contrib.rnn.LSTMCell(self.config.hidden_size_lstm)
-            (output_fw, output_bw), _ = tf.nn.bidirectional_dynamic_rnn(
+            (output_fw, output_bw), output_state = tf.nn.bidirectional_dynamic_rnn(
                     cell_fw, cell_bw, self.word_embeddings,
                     sequence_length=self.sequence_lengths, dtype=tf.float32)
             output = tf.concat([output_fw, output_bw], axis=-1)
@@ -186,6 +187,8 @@ class NERModel():
             nsteps = tf.shape(output)[1]
             output = tf.reshape(output, [-1, 2*self.config.hidden_size_lstm])
             pred = tf.matmul(output, W) + b
+
+            # inputs : [batch_size, max_seq_len, num_tags]
             self.logits = tf.reshape(pred, [-1, nsteps, self.config.ntags])
 
         self.add_pred_op()
@@ -196,9 +199,23 @@ class NERModel():
         # Use L2-SVM
         if self.config.use_svm:
             regularization_loss = 0.5 * tf.reduce_sum(tf.square(W))
+
+            print("self.labels : ", self.labels.get_shape())
+            print("self.logits : ", self.logits.get_shape())
+
+            sess = tf.Session()
+            tf_sample1 = tf.constant([0, 3, 4, 5], shape=[2, 2])
+            tf_sample2 = tf.constant([1, 1, 1, 1], shape=[2, 2])
+            print(sess.run(tf_sample1 * tf_sample2))
+
+            zero_mat = tf.zeros([2*self.config.hidden_size_lstm, self.config.ntags])
+            # comp_mat = 1 - self.labels * self.logits
+            comp_mat = tf.ones() - tf.matmul()
+
             hinge_loss = tf.reduce_sum(tf.square(
                 tf.maximum(
-                    tf.zeros(2*self.config.hidden_size_lstm, self.config.ntags), 1 - y_onehot * output)
+                    zero_mat, comp_mat
+                )
                 )
             )
             with tf.name_scope("loss"):
@@ -216,6 +233,8 @@ class NERModel():
             mask = tf.sequence_mask(self.sequence_lengths)
             losses = tf.boolean_mask(losses, mask)
             self.loss = tf.reduce_mean(losses)
+
+        # Sigmoid Function loss
 
         tf.summary.scalar("loss", self.loss) # Tensorboard visualization
 
