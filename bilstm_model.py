@@ -198,28 +198,8 @@ class NERModel():
         # Use CRF or softmax for loss function
         # Use L2-SVM
         if self.config.use_svm:
-            regularization_loss = 0.5 * tf.reduce_sum(tf.square(W))
-
-            print("self.labels : ", self.labels.get_shape())
-            print("self.logits : ", self.logits.get_shape())
-
-            sess = tf.Session()
-            tf_sample1 = tf.constant([0, 3, 4, 5], shape=[2, 2])
-            tf_sample2 = tf.constant([1, 1, 1, 1], shape=[2, 2])
-            print(sess.run(tf_sample1 * tf_sample2))
-
-            zero_mat = tf.zeros([2*self.config.hidden_size_lstm, self.config.ntags])
-            # comp_mat = 1 - self.labels * self.logits
-            comp_mat = tf.ones() - tf.matmul()
-
-            hinge_loss = tf.reduce_sum(tf.square(
-                tf.maximum(
-                    zero_mat, comp_mat
-                )
-                )
-            )
-            with tf.name_scope("loss"):
-                self.loss = regularization_loss + self.config.svm_c * hinge_loss
+            losses = tf.losses.hinge_loss(labels=self.labels, logits=self.logits)
+            self.loss = tf.reduce_sum(losses)
 
         if self.config.use_crf:
             log_likelihood, trans_params = tf.contrib.crf.crf_log_likelihood(
