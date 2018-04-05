@@ -202,12 +202,13 @@ class NERModel():
         # Use CRF or softmax for loss function
         # Use L2-SVM
         if self.config.use_svm:
-            # flat_logits = self.logits
-            flat_logits = pred
-            multiclass_hinge_loss = tf.contrib.kernel_methods.sparse_multiclass_hinge_loss(labels=self.labels, logits=flat_logits)
-            # mask = tf.sequence_mask(self.sequence_lengths)
-            # multiclass_hinge_loss = tf.boolean_mask(multiclass_hinge_loss, mask)
-            self.loss = tf.reduce_mean(multiclass_hinge_loss)
+            svm_labels = tf.one_hot(self.labels, self.config.ntags)
+            # multiclass_hinge_loss = tf.contrib.kernel_methods.sparse_multiclass_hinge_loss(labels=svm_labels, logits=self.logits)
+            # hinge_loss = tf.losses.hinge_loss(labels=svm_labels, logits=self.logits)
+            hinge_loss = tf.contrib.losses.hinge_loss(labels=svm_labels, logits=self.logits)
+            mask = tf.sequence_mask(self.sequence_lengths)
+            hinge_loss = tf.boolean_mask(hinge_loss, mask)
+            self.loss = tf.reduce_mean(hinge_loss)
 
         if self.config.use_crf:
             log_likelihood, trans_params = tf.contrib.crf.crf_log_likelihood(

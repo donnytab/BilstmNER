@@ -6,13 +6,9 @@
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/results/test/model.weights/.meta" afterPath="$PROJECT_DIR$/results/test/model.weights/.meta" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/bilstm_model.py" afterPath="$PROJECT_DIR$/bilstm_model.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/chars.txt" afterPath="$PROJECT_DIR$/chars.txt" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/param.py" afterPath="$PROJECT_DIR$/param.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/results/test/log.txt" afterPath="$PROJECT_DIR$/results/test/log.txt" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/results/test/model.weights/.data-00000-of-00001" afterPath="$PROJECT_DIR$/results/test/model.weights/.data-00000-of-00001" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tags.txt" afterPath="$PROJECT_DIR$/tags.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tf_test.py" afterPath="$PROJECT_DIR$/tf_test.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/words.txt" afterPath="$PROJECT_DIR$/words.txt" />
     </list>
     <ignored path="BilstmNER.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -55,12 +51,12 @@
       <file leaf-file-name="bilstm_model.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/bilstm_model.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="522">
-              <caret line="224" column="36" selection-start-line="224" selection-start-column="36" selection-end-line="224" selection-end-column="36" />
+            <state relative-caret-position="288">
+              <caret line="208" column="58" selection-start-line="208" selection-start-column="58" selection-end-line="208" selection-end-column="58" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
-                <marker date="1522956323000" expanded="true" signature="134:9662" ph="..." />
-                <marker date="1522956323000" expanded="true" signature="6208:9662" ph="..." />
+                <marker date="1522959243000" expanded="true" signature="134:9803" ph="..." />
+                <marker date="1522959243000" expanded="true" signature="6208:9803" ph="..." />
               </folding>
             </state>
           </provider>
@@ -111,8 +107,8 @@
       <file leaf-file-name="param.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/param.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="198">
-              <caret line="61" column="23" selection-start-line="61" selection-start-column="23" selection-end-line="61" selection-end-column="23" />
+            <state relative-caret-position="1584">
+              <caret line="93" column="18" selection-start-line="93" selection-start-column="18" selection-end-line="93" selection-end-column="18" />
               <folding>
                 <element signature="e#0#9#0" expanded="true" />
               </folding>
@@ -201,7 +197,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
+      <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -272,7 +268,7 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="Scratches" />
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -623,7 +619,7 @@
     <frame x="0" y="0" width="1280" height="800" extended-state="0" />
     <editor active="false" />
     <layout>
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.19709209" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.15670437" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -1028,8 +1024,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/param.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="198">
-          <caret line="61" column="23" selection-start-line="61" selection-start-column="23" selection-end-line="61" selection-end-column="23" />
+        <state relative-caret-position="1584">
+          <caret line="93" column="18" selection-start-line="93" selection-start-column="18" selection-end-line="93" selection-end-column="18" />
           <folding>
             <element signature="e#0#9#0" expanded="true" />
           </folding>
@@ -1038,12 +1034,12 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/bilstm_model.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="522">
-          <caret line="224" column="36" selection-start-line="224" selection-start-column="36" selection-end-line="224" selection-end-column="36" />
+        <state relative-caret-position="288">
+          <caret line="208" column="58" selection-start-line="208" selection-start-column="58" selection-end-line="208" selection-end-column="58" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
-            <marker date="1522956323000" expanded="true" signature="134:9662" ph="..." />
-            <marker date="1522956323000" expanded="true" signature="6208:9662" ph="..." />
+            <marker date="1522959243000" expanded="true" signature="134:9803" ph="..." />
+            <marker date="1522959243000" expanded="true" signature="6208:9803" ph="..." />
           </folding>
         </state>
       </provider>

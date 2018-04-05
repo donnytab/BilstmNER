@@ -91,8 +91,8 @@ class Config():
     use_crf = False  # if crf, training is 1.7x slower on CPU
     use_softmax = False
     use_chars = True  # if char embedding, training is 3.5x slower on CPU
-    use_svm = False
-    use_sigmoid = True
+    use_svm = True
+    use_sigmoid = False
 
 def getLogger(filename):
     logger = logging.getLogger('logger')
