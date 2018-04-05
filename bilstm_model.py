@@ -155,9 +155,12 @@ class NERModel():
 
     # Label for prediction
     def add_pred_op(self):
+        if self.config.use_svm:
+            # self.labels_pred = tf.cast(self.logits, tf.int32)
+            self.labels_pred = self.logits
+
         if not self.config.use_crf:
-            self.labels_pred = tf.cast(tf.argmax(self.logits, axis=-1),
-                    tf.int32)
+            self.labels_pred = tf.cast(tf.argmax(self.logits, axis=-1), tf.int32)
 
 
     def build(self):
@@ -190,6 +193,7 @@ class NERModel():
 
             # Classification inputs : [batch_size, max_seq_len, num_tags]
             self.logits = tf.reshape(pred, [-1, nsteps, self.config.ntags])
+            # self.logits = pred
 
         self.add_pred_op()
 
@@ -198,11 +202,12 @@ class NERModel():
         # Use CRF or softmax for loss function
         # Use L2-SVM
         if self.config.use_svm:
-            # Use flat tensor for logtis
-            flat_logits = self.logits
-            # flat_logits = tf.reshape(self.logits, [-1, 1])
-            hinge_loss = tf.losses.hinge_loss(labels=self.labels, logits=flat_logits)
-            self.loss = tf.reduce_mean(hinge_loss)
+            # flat_logits = self.logits
+            flat_logits = pred
+            multiclass_hinge_loss = tf.contrib.kernel_methods.sparse_multiclass_hinge_loss(labels=self.labels, logits=flat_logits)
+            # mask = tf.sequence_mask(self.sequence_lengths)
+            # multiclass_hinge_loss = tf.boolean_mask(multiclass_hinge_loss, mask)
+            self.loss = tf.reduce_mean(multiclass_hinge_loss)
 
         if self.config.use_crf:
             log_likelihood, trans_params = tf.contrib.crf.crf_log_likelihood(
@@ -216,7 +221,13 @@ class NERModel():
             losses = tf.boolean_mask(losses, mask)
             self.loss = tf.reduce_mean(losses)
 
-        # Sigmoid Function loss
+        if self.config.use_sigmoid:
+            sigmoid_labels = tf.one_hot(self.labels, self.config.ntags)
+            # sigmoid_loss = tf.nn.softmax_cross_entropy_with_logits_v2(labels=sigmoid_labels, logits=self.logits)
+            sigmoid_loss = tf.nn.sigmoid_cross_entropy_with_logits(labels=sigmoid_labels, logits=self.logits)
+            mask = tf.sequence_mask(self.sequence_lengths)
+            sigmoid_loss = tf.boolean_mask(sigmoid_loss, mask)
+            self.loss = tf.reduce_mean(sigmoid_loss)
 
         tf.summary.scalar("loss", self.loss) # Tensorboard visualization
 
@@ -292,8 +303,21 @@ class NERModel():
         for words, labels in minibatches(test, self.config.batch_size):
             labels_pred, sequence_lengths = self.predict_batch(words)
 
+            # print("labels: ")
+            # print(labels)
+            # print("labels_pred: ")
+            # print(labels_pred)
+            # print("sequence_lengths: ")
+            # print(sequence_lengths)
+
             for lab, lab_pred, length in zip(labels, labels_pred,
                                              sequence_lengths):
+                # print("lab : ")
+                # print(lab)
+                # print("lab_pred : ")
+                # print(lab_pred)
+                # print("length : ")
+                # print(length)
                 lab      = lab[:length]
                 lab_pred = lab_pred[:length]
                 accs    += [a==b for (a, b) in zip(lab, lab_pred)]

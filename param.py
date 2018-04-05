@@ -59,6 +59,9 @@ class Config():
     filename_dev = "CoNLL2003/valid.txt"
     filename_test = "CoNLL2003/test.txt"
     filename_train = "CoNLL2003/train.txt"
+    # filename_dev = "CoNLL2003/eng/eng.testa.iob"
+    # filename_test = "CoNLL2003/eng/eng.testb.iob"
+    # filename_train = "CoNLL2003/eng/eng.train.iob"
 
     # filename_dev = filename_test = filename_train = "data/test.txt" # test
 
@@ -86,9 +89,10 @@ class Config():
 
     # NOTE: if both chars and crf, only 1.6x slower on GPU
     use_crf = False  # if crf, training is 1.7x slower on CPU
-    use_softmax = True
+    use_softmax = False
     use_chars = True  # if char embedding, training is 3.5x slower on CPU
     use_svm = False
+    use_sigmoid = True
 
 def getLogger(filename):
     logger = logging.getLogger('logger')
