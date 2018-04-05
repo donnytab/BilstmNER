@@ -46,8 +46,8 @@ class Config():
     path_log = dir_output + "log.txt"
 
     # embeddings
-    dim_word = 100
-    dim_char = 25
+    dim_word = 300
+    dim_char = 100
 
     # glove files
     filename_glove = "../glove.6B/glove.6B.{}d.txt".format(dim_word)
@@ -71,25 +71,24 @@ class Config():
 
     # training
     train_embeddings = False
-    nepochs = 25
-    dropout = 0.5
-    batch_size = 40
-    lr_method = "sgd"
-    lr = 0.01
-    lr_decay = 1.0
-    clip = 5.0  # if negative, no clipping
-    nepoch_no_imprv = 4
+    nepochs          = 20
+    dropout          = 0.5
+    batch_size       = 30
+    lr_method        = "adam"
+    lr               = 0.001
+    lr_decay         = 0.9
+    clip             = -1 # if negative, no clipping
+    nepoch_no_imprv  = 3
 
     # model hyperparameters
-    hidden_size_char = 25  # lstm on chars
-    hidden_size_lstm = 100  # lstm on word embeddings
+    hidden_size_char = 100  # lstm on chars
+    hidden_size_lstm = 300  # lstm on word embeddings
 
     # NOTE: if both chars and crf, only 1.6x slower on GPU
     use_crf = False  # if crf, training is 1.7x slower on CPU
-    use_softmax = False
+    use_softmax = True
     use_chars = True  # if char embedding, training is 3.5x slower on CPU
-    use_svm = True
-    svm_c = 2**3 # range from 2^-5 to 2^3
+    use_svm = False
 
 def getLogger(filename):
     logger = logging.getLogger('logger')

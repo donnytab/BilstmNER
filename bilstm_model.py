@@ -155,7 +155,7 @@ class NERModel():
 
     # Label for prediction
     def add_pred_op(self):
-        if not self.config.use_crf or self.config.use_svm:
+        if not self.config.use_crf:
             self.labels_pred = tf.cast(tf.argmax(self.logits, axis=-1),
                     tf.int32)
 
@@ -188,7 +188,7 @@ class NERModel():
             output = tf.reshape(output, [-1, 2*self.config.hidden_size_lstm])
             pred = tf.matmul(output, W) + b
 
-            # inputs : [batch_size, max_seq_len, num_tags]
+            # Classification inputs : [batch_size, max_seq_len, num_tags]
             self.logits = tf.reshape(pred, [-1, nsteps, self.config.ntags])
 
         self.add_pred_op()
@@ -198,8 +198,11 @@ class NERModel():
         # Use CRF or softmax for loss function
         # Use L2-SVM
         if self.config.use_svm:
-            losses = tf.losses.hinge_loss(labels=self.labels, logits=self.logits)
-            self.loss = tf.reduce_sum(losses)
+            # Use flat tensor for logtis
+            flat_logits = self.logits
+            # flat_logits = tf.reshape(self.logits, [-1, 1])
+            hinge_loss = tf.losses.hinge_loss(labels=self.labels, logits=flat_logits)
+            self.loss = tf.reduce_mean(hinge_loss)
 
         if self.config.use_crf:
             log_likelihood, trans_params = tf.contrib.crf.crf_log_likelihood(
@@ -208,8 +211,7 @@ class NERModel():
             self.loss = tf.reduce_mean(-log_likelihood)
 
         if self.config.use_softmax:
-            losses = tf.nn.sparse_softmax_cross_entropy_with_logits(
-                    logits=self.logits, labels=self.labels)
+            losses = tf.nn.sparse_softmax_cross_entropy_with_logits(labels=self.labels, logits=self.logits)
             mask = tf.sequence_mask(self.sequence_lengths)
             losses = tf.boolean_mask(losses, mask)
             self.loss = tf.reduce_mean(losses)
@@ -317,7 +319,8 @@ class NERModel():
         print("correct_preds : ", correct_preds)
         print("total_correct : ", total_correct)
 
-        if total_preds > 0 and  total_correct > 0 and correct_preds > 0:
+        # if total_preds > 0 and  total_correct > 0 and correct_preds > 0:
+        if correct_preds > 0:
             p   = correct_preds / total_preds #if correct_preds > 0 else 0
             r   = correct_preds / total_correct #if correct_preds > 0 else 0
             f1  = 2 * p * r / (p + r) #if correct_preds > 0 else 0
@@ -327,7 +330,11 @@ class NERModel():
             tf.summary.scalar("accuracy", acc)
             tf.summary.scalar("f1", f1)
 
-        print("F1: ", f1)
+        else:
+            acc = f1 = 0.
+
+        print("Precision : ", p)
+        print("Recall : ", r)
 
         return {"acc": 100*acc, "f1": 100*f1}
 
