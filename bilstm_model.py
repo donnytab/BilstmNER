@@ -2,7 +2,7 @@ import numpy as np
 import os
 import time
 import tensorflow as tf
-
+from multiclass_svm import multiclass_svm
 from preprocess import minibatches, pad_sequences, get_chunks
 
 class NERModel():
@@ -200,8 +200,6 @@ class NERModel():
 
 
         # self.add_loss_op()
-        # Use CRF or softmax for loss function
-        # Use L2-SVM
         if self.config.use_svm:
             svm_labels = tf.one_hot(self.labels, self.config.ntags)
             # hinge_loss = tf.losses.hinge_loss(labels=svm_labels, logits=self.logits)
@@ -212,8 +210,7 @@ class NERModel():
 
         if self.config.use_multi_hinge:
             multi_hinge_logits = tf.reshape(self.logits, [-1, self.config.ntags])
-            multiclass_hinge_loss = tf.contrib.kernel_methods.sparse_multiclass_hinge_loss(
-                labels=self.labels, logits=multi_hinge_logits)
+            multiclass_hinge_loss = multiclass_svm(labels=self.labels, logits=multi_hinge_logits)
             # mask = tf.sequence_mask(self.sequence_lengths)
             # multiclass_hinge_loss = tf.boolean_mask(multiclass_hinge_loss, mask)
             self.loss = tf.reduce_mean(multiclass_hinge_loss)
