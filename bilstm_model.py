@@ -1,5 +1,6 @@
 import numpy as np
 import os
+import time
 import tensorflow as tf
 
 from preprocess import minibatches, pad_sequences, get_chunks
@@ -203,12 +204,19 @@ class NERModel():
         # Use L2-SVM
         if self.config.use_svm:
             svm_labels = tf.one_hot(self.labels, self.config.ntags)
-            # multiclass_hinge_loss = tf.contrib.kernel_methods.sparse_multiclass_hinge_loss(labels=svm_labels, logits=self.logits)
             # hinge_loss = tf.losses.hinge_loss(labels=svm_labels, logits=self.logits)
             hinge_loss = tf.contrib.losses.hinge_loss(labels=svm_labels, logits=self.logits)
             mask = tf.sequence_mask(self.sequence_lengths)
             hinge_loss = tf.boolean_mask(hinge_loss, mask)
             self.loss = tf.reduce_mean(hinge_loss)
+
+        if self.config.use_multi_hinge:
+            multi_hinge_logits = tf.reshape(self.logits, [-1, self.config.ntags])
+            multiclass_hinge_loss = tf.contrib.kernel_methods.sparse_multiclass_hinge_loss(
+                labels=self.labels, logits=multi_hinge_logits)
+            # mask = tf.sequence_mask(self.sequence_lengths)
+            # multiclass_hinge_loss = tf.boolean_mask(multiclass_hinge_loss, mask)
+            self.loss = tf.reduce_mean(multiclass_hinge_loss)
 
         if self.config.use_crf:
             log_likelihood, trans_params = tf.contrib.crf.crf_log_likelihood(
@@ -420,7 +428,7 @@ class NERModel():
         for epoch in range(self.config.nepochs):
             # self.logger.info("Epoch {:} out of {:}".format(epoch + 1,
             #             self.config.nepochs))
-
+            startTime = time.time()
             score = self.run_epoch(train, dev, epoch)
             self.config.lr *= self.config.lr_decay # decay learning rate
 
@@ -436,6 +444,10 @@ class NERModel():
                     # self.logger.info("- early stopping {} epochs without "\
                     #         "improvement".format(nepoch_no_imprv))
                     break
+
+            endTime = time.time()
+            elapsedTime = endTime - startTime
+            print("Time : ", elapsedTime)
 
     # Evaluation based on test dataset
     def evaluate(self, test):

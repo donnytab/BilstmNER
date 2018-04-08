@@ -776,3 +776,19 @@ Instructions for updating:
 Use tf.losses.hinge_loss instead. Note that the order of the logits and labels arguments has been changed, and to stay unweighted, reduction=Reduction.NONE
 2018-04-05 15:59:48,849:INFO: NER Initialization...
 2018-04-05 16:10:31,405:INFO: acc 96.36 - f1 78.73
+2018-04-05 21:50:48,854:INFO: NER Initialization...
+2018-04-05 22:01:39,685:INFO: acc 96.81 - f1 82.11
+2018-04-05 22:12:31,664:INFO: acc 97.88 - f1 87.22
+2018-04-05 22:23:05,821:INFO: acc 98.31 - f1 89.83
+2018-04-05 22:33:55,216:INFO: acc 98.56 - f1 91.27
+2018-04-05 22:44:38,624:INFO: acc 98.82 - f1 92.79
+2018-04-05 22:55:17,406:INFO: acc 99.00 - f1 93.82
+2018-04-05 23:05:53,076:INFO: acc 99.14 - f1 94.70
+2018-04-05 23:16:37,726:INFO: acc 99.22 - f1 95.24
+2018-04-05 23:27:02,289:INFO: acc 99.32 - f1 95.85
+2018-04-05 23:37:19,108:INFO: acc 99.39 - f1 96.26
+2018-04-05 23:47:50,590:INFO: acc 99.48 - f1 96.73
+2018-04-05 23:58:09,888:INFO: acc 99.53 - f1 96.97
+2018-04-06 00:08:20,574:INFO: acc 99.57 - f1 97.26
+2018-04-06 00:18:30,834:INFO: acc 99.61 - f1 97.52
+2018-04-06 00:28:45,508:INFO: acc 99.64 - f1 97.75
