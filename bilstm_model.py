@@ -213,27 +213,14 @@ class NERModel():
             multiclass_hinge_loss = multiclass_svm(labels=self.labels, logits=multi_hinge_logits)
             # mask = tf.sequence_mask(self.sequence_lengths)
             # multiclass_hinge_loss = tf.boolean_mask(multiclass_hinge_loss, mask)
-            self.loss = tf.reduce_mean(multiclass_hinge_loss)
-
-        if self.config.use_crf:
-            log_likelihood, trans_params = tf.contrib.crf.crf_log_likelihood(
-                    self.logits, self.labels, self.sequence_lengths)
-            self.trans_params = trans_params
-            self.loss = tf.reduce_mean(-log_likelihood)
+            # self.loss = tf.reduce_mean(multiclass_hinge_loss)
+            self.loss = tf.reduce_sum(multiclass_hinge_loss)
 
         if self.config.use_softmax:
             losses = tf.nn.sparse_softmax_cross_entropy_with_logits(labels=self.labels, logits=self.logits)
             mask = tf.sequence_mask(self.sequence_lengths)
             losses = tf.boolean_mask(losses, mask)
             self.loss = tf.reduce_mean(losses)
-
-        if self.config.use_sigmoid:
-            sigmoid_labels = tf.one_hot(self.labels, self.config.ntags)
-            # sigmoid_loss = tf.nn.softmax_cross_entropy_with_logits_v2(labels=sigmoid_labels, logits=self.logits)
-            sigmoid_loss = tf.nn.sigmoid_cross_entropy_with_logits(labels=sigmoid_labels, logits=self.logits)
-            mask = tf.sequence_mask(self.sequence_lengths)
-            sigmoid_loss = tf.boolean_mask(sigmoid_loss, mask)
-            self.loss = tf.reduce_mean(sigmoid_loss)
 
         tf.summary.scalar("loss", self.loss) # Tensorboard visualization
 
@@ -453,3 +440,8 @@ class NERModel():
         msg = " - ".join(["{} {:04.2f}".format(k, v)
                 for k, v in metrics.items()])
         self.logger.info(msg)
+
+    # Load trained weight data
+    def restore_session(self, dir_model):
+        self.logger.info("Reloading the latest trained model...")
+        self.saver.restore(self.sess, dir_model)
