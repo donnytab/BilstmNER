@@ -31,6 +31,7 @@ if __name__ == "__main__":
                                 config.filename_trimmed, config.dim_word)
 
     # Build and save char vocab
+    print("Training set...")
     train = CoNLLDataset(config.filename_train)
     vocab_chars = get_char_vocab(train)
     write_vocab(vocab_chars, config.filename_chars)
