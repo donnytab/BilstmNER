@@ -3,6 +3,57 @@ import logging
 from preprocess import get_trimmed_glove_vectors, load_vocab, get_processing_word
 
 class Config():
+    # dimensions of word and char embeddings
+    dim_word = 300
+    dim_char = 100
+    hidden_size_char = 100
+    hidden_size_lstm = 300
+
+    ######## Manual Config Setup ########
+
+    # GloVe Path setup
+    glove_path = "../"   # To be changed. For this config, we setup GloVe files outside of this project
+    output_glove = glove_path + "glove.6B/glove.6B.{}d.txt".format(dim_word)
+    output_trimmed = glove_path + "glove.6B.{}d.trimmed.npz".format(dim_word)
+
+    # Decoding layer options
+    use_crf = False
+    use_softmax = False
+    use_svm = False
+    use_multiclass_svm = True
+
+    # Training hyperparameters
+    train_embeddings = False
+    nepochs          = 20
+    dropout          = 0.5
+    batch_size       = 30
+    lr_method        = "adam"
+    lr               = 0.001
+    lr_decay         = 0.9
+    clip             = -1 # if negative, no clipping
+    nepoch_no_imprv  = 3
+
+    #####################################
+
+    # general config
+    dir_output = "results/test/"
+    dir_model = dir_output + "model.weights/"
+    path_log = dir_output + "log.txt"
+
+    use_pretrained = True
+    use_chars = True
+    max_iter = None
+
+    # dataset
+    conll_dev = "CoNLL2003/valid.txt"
+    conll_test = "CoNLL2003/test.txt"
+    conll_train = "CoNLL2003/train.txt"
+
+    # Output files
+    output_words = "context/output_words.txt"
+    output_tags = "context/output_tags.txt"
+    output_chars = "context/output_chars.txt"
+
     def __init__(self, load=True):
         # directory for training outputs
         if not os.path.exists(self.dir_output):
@@ -34,62 +85,6 @@ class Config():
                            if self.use_pretrained else None)
 
 
-        # general config
-
-    dir_output = "results/test/"
-    dir_model = dir_output + "model.weights/"
-    path_log = dir_output + "log.txt"
-
-    # embeddings
-    dim_word = 300
-    dim_char = 100
-
-    # glove files
-    output_glove = "../glove.6B/glove.6B.{}d.txt".format(dim_word)
-
-    # trimmed embeddings
-    output_trimmed = "../glove.6B.{}d.trimmed.npz".format(dim_word)
-    use_pretrained = True
-
-    # dataset
-    conll_dev = "CoNLL2003/valid.txt"
-    conll_test = "CoNLL2003/test.txt"
-    conll_train = "CoNLL2003/train.txt"
-    # output_dev = "CoNLL2003/eng/eng.testa.iob"
-    # output_test = "CoNLL2003/eng/eng.testb.iob"
-    # output_train = "CoNLL2003/eng/eng.train.iob"
-
-    # output_dev = output_test = output_train = "data/test.txt" # test
-
-    max_iter = None  # if not None, max number of examples in Dataset
-
-    # vocab (created from dataset with build_data.py)
-    output_words = "words.txt"
-    output_tags = "tags.txt"
-    output_chars = "chars.txt"
-
-    # training
-    train_embeddings = False
-    nepochs          = 20
-    dropout          = 0.5
-    batch_size       = 30
-    lr_method        = "adam"
-    lr               = 0.001
-    lr_decay         = 0.9
-    clip             = -1 # if negative, no clipping
-    nepoch_no_imprv  = 3
-
-    # model hyperparameters
-    hidden_size_char = 100  # lstm on chars
-    hidden_size_lstm = 300  # lstm on word embeddings
-
-    # NOTE: if both chars and crf, only 1.6x slower on GPU
-    use_crf = False  # if crf, training is 1.7x slower on CPU
-    use_softmax = False
-    use_chars = True  # if char embedding, training is 3.5x slower on CPU
-    use_svm = False
-    use_sigmoid = False
-    use_multi_hinge = True
 
 def getLogger(filename):
     logger = logging.getLogger('logger')

@@ -14,6 +14,7 @@ if __name__ == "__main__":
     model.build()
     model.restore_session(config.dir_model)
 
-    test = DatasetHandler(config.output_test, config.processing_word,
-                        config.processing_tag, config.max_iter)
+    test = DatasetHandler(config.output_test, config.processing_word,config.processing_tag, config.max_iter)
+
+    # Evaluate testing set
     model.evaluate(test)

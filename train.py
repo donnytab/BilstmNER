@@ -9,7 +9,6 @@ from param import Config
 if __name__ == "__main__":
     # Load configs
     config = Config(load=False)
-    train_config = Config()
     target_word = get_processing_word(lowercase=True)
 
     # Target words from datasets
@@ -37,6 +36,7 @@ if __name__ == "__main__":
 
 
     # build model
+    train_config = Config()
     model = NERModel(train_config)
     model.build()
     # model.restore_session("results/crf/model.weights/") # optional, restore weights

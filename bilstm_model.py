@@ -208,12 +208,9 @@ class NERModel():
             hinge_loss = tf.boolean_mask(hinge_loss, mask)
             self.loss = tf.reduce_mean(hinge_loss)
 
-        if self.config.use_multi_hinge:
+        if self.config.use_multiclass_svm:
             multi_hinge_logits = tf.reshape(self.logits, [-1, self.config.ntags])
             multiclass_hinge_loss = multiclass_svm(labels=self.labels, logits=multi_hinge_logits)
-            # mask = tf.sequence_mask(self.sequence_lengths)
-            # multiclass_hinge_loss = tf.boolean_mask(multiclass_hinge_loss, mask)
-            # self.loss = tf.reduce_mean(multiclass_hinge_loss)
             self.loss = tf.reduce_sum(multiclass_hinge_loss)
 
         if self.config.use_softmax:
