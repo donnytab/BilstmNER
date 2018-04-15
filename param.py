@@ -25,10 +25,10 @@ class Config():
 
     # Training hyperparameters
     train_embeddings = False
-    nepochs = 1
+    nepochs = 20                # Number of epoch : 10, 15, 20 for experiment. 20 gives the best performance.
     dropout = 0.5
     batch_size = 30
-    lr = 0.001
+    lr = 0.001                  # Learning rate
     lr_decay = 0.9
     clip = -1
     nepoch_no_imprv = 3
