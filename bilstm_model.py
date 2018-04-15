@@ -346,7 +346,7 @@ class BilstmModel():
             endTime = time.time()
             elapsedTime = endTime - startTime
             print("Time : ", elapsedTime)
-            print("TRAINING EPOCH ", epoch, " FINISHED\n")
+            print("TRAINING EPOCH ", epoch+1, " FINISHED\n")
 
     # Evaluation based on test dataset
     def evaluate(self, test):
