@@ -1,4 +1,4 @@
-'''
+﻿'''
 Evaluate performance of BLSTM-SVM model
 '''
 from param import Config

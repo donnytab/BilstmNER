@@ -1,4 +1,4 @@
-'''
+﻿'''
 Bidirectional LSTM model with multiclass SVM option for NER system
 '''
 import numpy as np

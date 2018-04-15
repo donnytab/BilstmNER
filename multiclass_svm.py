@@ -1,4 +1,4 @@
-'''
+﻿'''
 multiclass_svm.py : perform calculation for multiclass SVM loss
 '''
 

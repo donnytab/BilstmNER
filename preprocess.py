@@ -1,4 +1,4 @@
-'''
+﻿'''
 Dataset handler for word, char, sequence preprocessing
 '''
 import numpy as np
@@ -22,7 +22,7 @@ class DatasetHandler(object):
     # generate (words, tags)
     def __iter__(self):
         niter = 0
-        with open(self.filename) as f:
+        with open(self.filename,encoding='utf8') as f:
             words, tags = [], []
             for line in f:
                 line = line.strip()
@@ -76,7 +76,7 @@ def get_char_vocab(dataset):
 # Get GloVe vocabulary from dataset
 def get_glove_vocab(filename):
     vocab = set()
-    with open(filename) as f:
+    with open(filename,encoding='utf8') as f:
         for line in f:
             word = line.strip().split(' ')[0]
             vocab.add(word)
@@ -85,7 +85,7 @@ def get_glove_vocab(filename):
 
 # Write vocabulary to file
 def write_vocab(vocab, filename):
-    with open(filename, "w") as f:
+    with open(filename, "w",encoding='utf8') as f:
         for i, word in enumerate(vocab):
             if i != len(vocab) - 1:
                 f.write("{}\n".format(word))
@@ -96,7 +96,7 @@ def write_vocab(vocab, filename):
 # load vocabulary from file
 def load_vocab(filename):
     d = dict()
-    with open(filename) as f:
+    with open(filename,encoding='utf8') as f:
         for idx, word in enumerate(f):
             word = word.strip()
             d[word] = idx
@@ -105,7 +105,7 @@ def load_vocab(filename):
 # Generate numpy array for GloVe vectors
 def export_trimmed_glove_vectors(vocab, glove_filename, trimmed_filename, dim):
     embeddings = np.zeros([len(vocab), dim])
-    with open(glove_filename) as f:
+    with open(glove_filename,encoding='utf8') as f:
         for line in f:
             line = line.strip().split(' ')
             word = line[0]

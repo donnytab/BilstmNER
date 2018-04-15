@@ -1,4 +1,4 @@
-'''
+﻿'''
 Config Parameters for NER model
 '''
 import os
@@ -26,7 +26,7 @@ class Config():
 
     # Training hyperparameters
     train_embeddings = False
-    nepochs = 20
+    nepochs = 1
     dropout = 0.5
     batch_size = 30
     lr = 0.001
