@@ -15,26 +15,24 @@ class Config():
     ######## Manual Config Setup ########
 
     # GloVe Path setup
-    glove_path = "../"   # To be changed. For this config, we setup GloVe files outside of this project
+    glove_path = "../"   # Resource path to be changed. For this config, we setup GloVe files outside of this project
     output_glove = glove_path + "glove.6B/glove.6B.{}d.txt".format(dim_word)
     output_trimmed = glove_path + "glove.6B.{}d.trimmed.npz".format(dim_word)
 
     # Decoding layer options
-    use_crf = False
+    use_multiclass_svm = True
     use_softmax = False
     use_svm = False
-    use_multiclass_svm = True
 
     # Training hyperparameters
     train_embeddings = False
     nepochs = 20
     dropout = 0.5
     batch_size = 30
-    lr_method = "adam"
     lr = 0.001
     lr_decay = 0.9
     clip = -1
-    nepoch_no_imprv  = 3
+    nepoch_no_imprv = 3
 
     #####################################
 

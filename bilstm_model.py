@@ -126,21 +126,18 @@ class BilstmModel():
                 output = tf.concat([output_fw, output_bw], axis=-1)
 
                 # shape = (batch size, max sentence length, char hidden size)
-                output = tf.reshape(output,
-                        shape=[s[0], s[1], 2*self.config.hidden_size_char])
+                output = tf.reshape(output, shape=[s[0], s[1], 2*self.config.hidden_size_char])
                 word_embeddings = tf.concat([word_embeddings, output], axis=-1)
 
-        self.word_embeddings =  tf.nn.dropout(word_embeddings, self.dropout)
+        self.word_embeddings = tf.nn.dropout(word_embeddings, self.dropout)
 
 
     # Label for prediction
-    def add_pred_op(self):
-        if self.config.use_svm:
-            # self.labels_pred = tf.cast(self.logits, tf.int32)
-            self.labels_pred = self.logits
-
-        if not self.config.use_crf:
-            self.labels_pred = tf.cast(tf.argmax(self.logits, axis=-1), tf.int32)
+    # def add_pred_op(self):
+    #     if self.config.use_svm:
+    #         self.labels_pred = self.logits
+    #
+    #     self.labels_pred = tf.cast(tf.argmax(self.logits, axis=-1), tf.int32)
 
 
     def build(self):
@@ -171,21 +168,26 @@ class BilstmModel():
             # Classification inputs : [batch_size, max_seq_len, num_tags]
             self.logits = tf.reshape(pred, [-1, nsteps, self.config.ntags])
 
-        self.add_pred_op()
+        if self.config.use_svm:
+            self.labels_pred = self.logits
 
+        self.labels_pred = tf.cast(tf.argmax(self.logits, axis=-1), tf.int32)
+
+        # Option for binary SVM
         if self.config.use_svm:
             svm_labels = tf.one_hot(self.labels, self.config.ntags)
-            # hinge_loss = tf.losses.hinge_loss(labels=svm_labels, logits=self.logits)
             hinge_loss = tf.contrib.losses.hinge_loss(labels=svm_labels, logits=self.logits)
             mask = tf.sequence_mask(self.sequence_lengths)
             hinge_loss = tf.boolean_mask(hinge_loss, mask)
             self.loss = tf.reduce_mean(hinge_loss)
 
+        # Option for multiclass SVM
         if self.config.use_multiclass_svm:
             multi_hinge_logits = tf.reshape(self.logits, [-1, self.config.ntags])
             multiclass_hinge_loss = multiclass_svm(labels=self.labels, logits=multi_hinge_logits)
             self.loss = tf.reduce_sum(multiclass_hinge_loss)
 
+        # Option for softmax
         if self.config.use_softmax:
             losses = tf.nn.sparse_softmax_cross_entropy_with_logits(labels=self.labels, logits=self.logits)
             mask = tf.sequence_mask(self.sequence_lengths)
