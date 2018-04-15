@@ -1,9 +1,6 @@
 import os
-import sys
-import time
 import logging
-from preprocess import get_trimmed_glove_vectors, load_vocab, \
-        get_processing_word
+from preprocess import get_trimmed_glove_vectors, load_vocab, get_processing_word
 
 class Config():
     def __init__(self, load=True):
@@ -19,23 +16,21 @@ class Config():
             self.load()
 
     def load(self):
-        # 1. vocabulary
-        self.vocab_words = load_vocab(self.filename_words)
-        self.vocab_tags = load_vocab(self.filename_tags)
-        self.vocab_chars = load_vocab(self.filename_chars)
+        # Load vocabulary
+        self.vocab_words = load_vocab(self.output_words)
+        self.vocab_tags = load_vocab(self.output_tags)
+        self.vocab_chars = load_vocab(self.output_chars)
 
         self.nwords = len(self.vocab_words)
         self.nchars = len(self.vocab_chars)
         self.ntags = len(self.vocab_tags)
 
-        # 2. get processing functions that map str -> id
-        self.processing_word = get_processing_word(self.vocab_words,
-                                                   self.vocab_chars, lowercase=True, chars=self.use_chars)
-        self.processing_tag = get_processing_word(self.vocab_tags,
-                                                  lowercase=False, allow_unk=False)
+        # Get processing functions that map str -> id
+        self.processing_word = get_processing_word(self.vocab_words,self.vocab_chars, lowercase=True, chars=self.use_chars)
+        self.processing_tag = get_processing_word(self.vocab_tags, lowercase=False, allow_unk=False)
 
-        # 3. get pre-trained embeddings
-        self.embeddings = (get_trimmed_glove_vectors(self.filename_trimmed)
+        # Get pre-trained embeddings
+        self.embeddings = (get_trimmed_glove_vectors(self.output_trimmed)
                            if self.use_pretrained else None)
 
 
@@ -50,27 +45,28 @@ class Config():
     dim_char = 100
 
     # glove files
-    filename_glove = "../glove.6B/glove.6B.{}d.txt".format(dim_word)
-    # trimmed embeddings (created from glove_filename with build_data.py)
-    filename_trimmed = "../glove.6B.{}d.trimmed.npz".format(dim_word)
+    output_glove = "../glove.6B/glove.6B.{}d.txt".format(dim_word)
+
+    # trimmed embeddings
+    output_trimmed = "../glove.6B.{}d.trimmed.npz".format(dim_word)
     use_pretrained = True
 
     # dataset
-    filename_dev = "CoNLL2003/valid.txt"
-    filename_test = "CoNLL2003/test.txt"
-    filename_train = "CoNLL2003/train.txt"
-    # filename_dev = "CoNLL2003/eng/eng.testa.iob"
-    # filename_test = "CoNLL2003/eng/eng.testb.iob"
-    # filename_train = "CoNLL2003/eng/eng.train.iob"
+    conll_dev = "CoNLL2003/valid.txt"
+    conll_test = "CoNLL2003/test.txt"
+    conll_train = "CoNLL2003/train.txt"
+    # output_dev = "CoNLL2003/eng/eng.testa.iob"
+    # output_test = "CoNLL2003/eng/eng.testb.iob"
+    # output_train = "CoNLL2003/eng/eng.train.iob"
 
-    # filename_dev = filename_test = filename_train = "data/test.txt" # test
+    # output_dev = output_test = output_train = "data/test.txt" # test
 
     max_iter = None  # if not None, max number of examples in Dataset
 
     # vocab (created from dataset with build_data.py)
-    filename_words = "words.txt"
-    filename_tags = "tags.txt"
-    filename_chars = "chars.txt"
+    output_words = "words.txt"
+    output_tags = "tags.txt"
+    output_chars = "chars.txt"
 
     # training
     train_embeddings = False

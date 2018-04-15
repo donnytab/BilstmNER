@@ -8,7 +8,7 @@ NUM = "$NUM$"
 NONE = "O"
 
 # Handler class for conll dataset
-class CoNLLDataset(object):
+class DatasetHandler(object):
     def __init__(self, filename, processing_word=None, processing_tag=None,
                  max_iter=None):
         self.filename = filename    # File path
