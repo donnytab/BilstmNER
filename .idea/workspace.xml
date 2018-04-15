@@ -2,12 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="4aeb39cc-7613-4630-b151-cea4b2d4ddc1" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/WordID.txt" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/chars.txt" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/tags.txt" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/words.txt" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/bilstm_model.py" afterPath="$PROJECT_DIR$/bilstm_model.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/context/output_chars.txt" afterPath="$PROJECT_DIR$/context/output_chars.txt" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/context/output_tags.txt" afterPath="$PROJECT_DIR$/context/output_tags.txt" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/context/output_words.txt" afterPath="$PROJECT_DIR$/context/output_words.txt" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/evaluate.py" afterPath="$PROJECT_DIR$/evaluate.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/param.py" afterPath="$PROJECT_DIR$/param.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/results/test/log.txt" afterPath="$PROJECT_DIR$/results/test/log.txt" />
@@ -42,7 +41,7 @@
       <file leaf-file-name="multiclass_svm.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/multiclass_svm.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="306">
+            <state relative-caret-position="324">
               <caret line="18" column="22" selection-start-line="18" selection-start-column="22" selection-end-line="18" selection-end-column="22" />
               <folding>
                 <element signature="e#73#134#0" expanded="true" />
@@ -54,7 +53,7 @@
       <file leaf-file-name="preprocess.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/preprocess.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="144">
+            <state relative-caret-position="162">
               <caret line="9" column="21" selection-start-line="9" selection-start-column="20" selection-end-line="9" selection-end-column="21" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
@@ -66,24 +65,22 @@
       <file leaf-file-name="train.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/train.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="180">
-              <caret line="10" column="31" selection-start-line="10" selection-start-column="31" selection-end-line="10" selection-end-column="31" />
-              <folding>
-                <element signature="e#47#199#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="90">
+              <caret line="5" column="36" selection-start-line="5" selection-start-column="36" selection-end-line="5" selection-end-column="36" />
+              <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="bilstm_model.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="bilstm_model.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/bilstm_model.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="72">
-              <caret line="264" column="51" selection-start-line="264" selection-start-column="51" selection-end-line="264" selection-end-column="51" />
+            <state relative-caret-position="180">
+              <caret line="330" column="44" selection-start-line="330" selection-start-column="44" selection-end-line="330" selection-end-column="44" />
               <folding>
-                <element signature="e#0#18#0" expanded="true" />
-                <marker date="1523763413000" expanded="true" signature="187:9151" ph="..." />
-                <marker date="1523763413000" expanded="true" signature="6261:9151" ph="..." />
+                <element signature="e#75#93#0" expanded="true" />
+                <marker date="1523768698000" expanded="true" signature="265:8309" ph="..." />
+                <marker date="1523768698000" expanded="true" signature="5645:8309" ph="..." />
               </folding>
             </state>
           </provider>
@@ -92,22 +89,22 @@
       <file leaf-file-name="evaluate.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/evaluate.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="216">
-              <caret line="12" column="28" selection-start-line="12" selection-start-column="28" selection-end-line="12" selection-end-column="28" />
+            <state relative-caret-position="324">
+              <caret line="18" column="23" selection-start-line="18" selection-start-column="23" selection-end-line="18" selection-end-column="23" />
               <folding>
-                <element signature="e#0#24#0" expanded="true" />
+                <element signature="e#48#72#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="param.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="param.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/param.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="396">
-              <caret line="22" column="18" selection-start-line="22" selection-start-column="18" selection-end-line="22" selection-end-column="18" />
+            <state relative-caret-position="36">
+              <caret line="2" column="3" selection-start-line="2" selection-start-column="3" selection-end-line="2" selection-end-column="3" />
               <folding>
-                <element signature="e#0#9#0" expanded="true" />
+                <element signature="e#40#49#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -187,6 +184,7 @@
     </navigator>
     <panes>
       <pane id="Scratches" />
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -225,7 +223,6 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -576,11 +573,10 @@
     <frame x="0" y="0" width="1280" height="800" extended-state="0" />
     <editor active="false" />
     <layout>
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.21163167" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.21486267" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32876712" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32876712" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32876712" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -592,6 +588,7 @@
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2739726" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32876712" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
     </layout>
@@ -810,9 +807,10 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/WordID.txt" />
     <entry file="file://$PROJECT_DIR$/multiclass_svm.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="306">
+        <state relative-caret-position="324">
           <caret line="18" column="22" selection-start-line="18" selection-start-column="22" selection-end-line="18" selection-end-column="22" />
           <folding>
             <element signature="e#73#134#0" expanded="true" />
@@ -820,10 +818,37 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/WordID.txt" />
+    <entry file="file://$PROJECT_DIR$/evaluate.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="324">
+          <caret line="18" column="23" selection-start-line="18" selection-start-column="23" selection-end-line="18" selection-end-column="23" />
+          <folding>
+            <element signature="e#48#72#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/param.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="36">
+          <caret line="2" column="3" selection-start-line="2" selection-start-column="3" selection-end-line="2" selection-end-column="3" />
+          <folding>
+            <element signature="e#40#49#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/train.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="90">
+          <caret line="5" column="36" selection-start-line="5" selection-start-column="36" selection-end-line="5" selection-end-column="36" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/preprocess.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="144">
+        <state relative-caret-position="162">
           <caret line="9" column="21" selection-start-line="9" selection-start-column="20" selection-end-line="9" selection-end-column="21" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
@@ -831,44 +856,14 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/train.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="180">
-          <caret line="10" column="31" selection-start-line="10" selection-start-column="31" selection-end-line="10" selection-end-column="31" />
-          <folding>
-            <element signature="e#47#199#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/bilstm_model.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="72">
-          <caret line="264" column="51" selection-start-line="264" selection-start-column="51" selection-end-line="264" selection-end-column="51" />
+        <state relative-caret-position="180">
+          <caret line="330" column="44" selection-start-line="330" selection-start-column="44" selection-end-line="330" selection-end-column="44" />
           <folding>
-            <element signature="e#0#18#0" expanded="true" />
-            <marker date="1523763413000" expanded="true" signature="187:9151" ph="..." />
-            <marker date="1523763413000" expanded="true" signature="6261:9151" ph="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/evaluate.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="216">
-          <caret line="12" column="28" selection-start-line="12" selection-start-column="28" selection-end-line="12" selection-end-column="28" />
-          <folding>
-            <element signature="e#0#24#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/param.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="396">
-          <caret line="22" column="18" selection-start-line="22" selection-start-column="18" selection-end-line="22" selection-end-column="18" />
-          <folding>
-            <element signature="e#0#9#0" expanded="true" />
+            <element signature="e#75#93#0" expanded="true" />
+            <marker date="1523768698000" expanded="true" signature="265:8309" ph="..." />
+            <marker date="1523768698000" expanded="true" signature="5645:8309" ph="..." />
           </folding>
         </state>
       </provider>

@@ -1,3 +1,6 @@
+'''
+Bidirectional LSTM model with multiclass SVM option for NER system
+'''
 import numpy as np
 import os
 import time
@@ -5,10 +8,9 @@ import tensorflow as tf
 from multiclass_svm import multiclass_svm
 from preprocess import minibatches, pad_sequences, get_chunks
 
-class NERModel():
+class BilstmModel():
 
     def __init__(self, config):
-        # super(NERModel, self).__init__(config)
         self.config = config
         self.logger = config.logger
         self.sess   = None
@@ -18,7 +20,7 @@ class NERModel():
 
     # Initialization
     def initialize_session(self):
-        self.logger.info("NER Initialization...")
+        self.logger.info("INITIALIZE NER SYSTEM...")
         self.sess = tf.Session()
         self.sess.run(tf.global_variables_initializer())
         self.saver = tf.train.Saver()
@@ -35,33 +37,15 @@ class NERModel():
 
     # Tensorflow Placeholders
     def add_placeholders(self):
-        # shape = (batch size, max length of sentence in batch)
-        self.word_ids = tf.placeholder(tf.int32, shape=[None, None],
-                        name="word_ids")
-
-        # shape = (batch size)
-        self.sequence_lengths = tf.placeholder(tf.int32, shape=[None],
-                        name="sequence_lengths")
-
-        # shape = (batch size, max length of sentence, max length of word)
-        self.char_ids = tf.placeholder(tf.int32, shape=[None, None, None],
-                        name="char_ids")
-
-        # shape = (batch_size, max_length of sentence)
-        self.word_lengths = tf.placeholder(tf.int32, shape=[None, None],
-                        name="word_lengths")
-
-        # shape = (batch size, max length of sentence in batch)
+        self.word_ids = tf.placeholder(tf.int32, shape=[None, None],name="word_ids")
+        self.sequence_lengths = tf.placeholder(tf.int32, shape=[None],name="sequence_lengths")
+        self.char_ids = tf.placeholder(tf.int32, shape=[None, None, None],name="char_ids")
+        self.word_lengths = tf.placeholder(tf.int32, shape=[None, None],name="word_lengths")
         # tag_indices
-        self.labels = tf.placeholder(tf.int32, shape=[None, None],
-                        name="labels")
-
+        self.labels = tf.placeholder(tf.int32, shape=[None, None],name="labels")
         # hyper parameters
-        self.dropout = tf.placeholder(dtype=tf.float32, shape=[],
-                        name="dropout")
-        self.lr = tf.placeholder(dtype=tf.float32, shape=[],
-                        name="lr")
-
+        self.dropout = tf.placeholder(dtype=tf.float32, shape=[],name="dropout")
+        self.lr = tf.placeholder(dtype=tf.float32, shape=[],name="lr")
 
     # Retrieve fed data
     def get_feed_dict(self, words, labels=None, lr=None, dropout=None):
@@ -102,7 +86,6 @@ class NERModel():
     def add_word_embeddings_op(self):
         with tf.variable_scope("words"):
             if self.config.embeddings is None:
-                self.logger.info("WARNING: randomly initializing word vectors")
                 _word_embeddings = tf.get_variable(
                         name="_word_embeddings",
                         dtype=tf.float32,
@@ -133,14 +116,10 @@ class NERModel():
                         shape=[s[0]*s[1], s[-2], self.config.dim_char])
                 word_lengths = tf.reshape(self.word_lengths, shape=[s[0]*s[1]])
 
-                # bi lstm on chars
-                cell_fw = tf.contrib.rnn.LSTMCell(self.config.hidden_size_char,
-                        state_is_tuple=True)
-                cell_bw = tf.contrib.rnn.LSTMCell(self.config.hidden_size_char,
-                        state_is_tuple=True)
-                _output = tf.nn.bidirectional_dynamic_rnn(
-                        cell_fw, cell_bw, char_embeddings,
-                        sequence_length=word_lengths, dtype=tf.float32)
+                # bilstm on chars
+                cell_fw = tf.contrib.rnn.LSTMCell(self.config.hidden_size_char, state_is_tuple=True)
+                cell_bw = tf.contrib.rnn.LSTMCell(self.config.hidden_size_char, state_is_tuple=True)
+                _output = tf.nn.bidirectional_dynamic_rnn(cell_fw, cell_bw, char_embeddings, sequence_length=word_lengths, dtype=tf.float32)
 
                 # read and concat output
                 _, ((_, output_fw), (_, output_bw)) = _output
@@ -169,7 +148,6 @@ class NERModel():
         self.add_placeholders()
         self.add_word_embeddings_op()
 
-        # self.add_logits_op()
         # Add vector scores
         # dimension : number of tags
         with tf.variable_scope("bi-lstm"):
@@ -182,11 +160,9 @@ class NERModel():
             output = tf.nn.dropout(output, self.dropout)
 
         with tf.variable_scope("proj"):
-            W = tf.get_variable("W", dtype=tf.float32,
-                    shape=[2*self.config.hidden_size_lstm, self.config.ntags])
+            W = tf.get_variable("W", dtype=tf.float32,shape=[2*self.config.hidden_size_lstm, self.config.ntags])
 
-            b = tf.get_variable("b", shape=[self.config.ntags],
-                    dtype=tf.float32, initializer=tf.zeros_initializer())
+            b = tf.get_variable("b", shape=[self.config.ntags],dtype=tf.float32, initializer=tf.zeros_initializer())
 
             nsteps = tf.shape(output)[1]
             output = tf.reshape(output, [-1, 2*self.config.hidden_size_lstm])
@@ -194,12 +170,9 @@ class NERModel():
 
             # Classification inputs : [batch_size, max_seq_len, num_tags]
             self.logits = tf.reshape(pred, [-1, nsteps, self.config.ntags])
-            # self.logits = pred
 
         self.add_pred_op()
 
-
-        # self.add_loss_op()
         if self.config.use_svm:
             svm_labels = tf.one_hot(self.labels, self.config.ntags)
             # hinge_loss = tf.losses.hinge_loss(labels=svm_labels, logits=self.logits)
@@ -219,47 +192,26 @@ class NERModel():
             losses = tf.boolean_mask(losses, mask)
             self.loss = tf.reduce_mean(losses)
 
-        tf.summary.scalar("loss", self.loss) # Tensorboard visualization
+        tf.summary.scalar("loss", self.loss)
 
         # Generic functions that add training op and initialize session
-        self.add_train_op(self.config.lr_method, self.lr, self.loss,
-                self.config.clip)
-        self.initialize_session() # now self.sess is defined and vars are init
+        self.add_train_op(self.config.lr_method, self.lr, self.loss,self.config.clip)
+        self.initialize_session()
 
 
     # words: list of sentences
     # Generate prediction batches
     def predict_batch(self, words):
         fd, sequence_lengths = self.get_feed_dict(words, dropout=1.0)
-
-        if self.config.use_crf:
-            # get tag scores and transition params of CRF
-            viterbi_sequences = []
-            logits, trans_params = self.sess.run(
-                    [self.logits, self.trans_params], feed_dict=fd)
-
-            # iterate over the sentences because no batching in vitervi_decode
-            for logit, sequence_length in zip(logits, sequence_lengths):
-                logit = logit[:sequence_length] # keep only the valid steps
-                viterbi_seq, viterbi_score = tf.contrib.crf.viterbi_decode(
-                        logit, trans_params)
-                viterbi_sequences += [viterbi_seq]
-
-            return viterbi_sequences, sequence_lengths
-
-        else:
-            labels_pred = self.sess.run(self.labels_pred, feed_dict=fd)
-
-            return labels_pred, sequence_lengths
+        labels_pred = self.sess.run(self.labels_pred, feed_dict=fd)
+        return labels_pred, sequence_lengths
 
 
     # Run training and evaluation on dataset
     # train, dev: dataset
     def run_epoch(self, train, dev, epoch):
-        # # progbar stuff for logging
         batch_size = self.config.batch_size
         nbatches = (len(train) + batch_size - 1) // batch_size
-        # prog = Progbar(target=nbatches)
 
         # iterate over dataset
         for i, (words, labels) in enumerate(minibatches(train, batch_size)):
@@ -268,8 +220,6 @@ class NERModel():
 
             _, train_loss, summary = self.sess.run(
                     [self.train_op, self.loss, self.merged], feed_dict=fd)
-
-            # prog.update(i + 1, [("train loss", train_loss)])
 
             # tensorboard
             if i % 10 == 0:
@@ -280,7 +230,6 @@ class NERModel():
                 for k, v in metrics.items()])
         self.logger.info(msg)
 
-        # print("metrics: ", metrics)
 
         return metrics["f1"]    # return F1 score
 
@@ -293,51 +242,32 @@ class NERModel():
         for words, labels in minibatches(test, self.config.batch_size):
             labels_pred, sequence_lengths = self.predict_batch(words)
 
-            # print("labels: ")
-            # print(labels)
-            # print("labels_pred: ")
-            # print(labels_pred)
-            # print("sequence_lengths: ")
-            # print(sequence_lengths)
+            for lab, lab_pred, length in zip(labels, labels_pred, sequence_lengths):
 
-            for lab, lab_pred, length in zip(labels, labels_pred,
-                                             sequence_lengths):
-                # print("lab : ")
-                # print(lab)
-                # print("lab_pred : ")
-                # print(lab_pred)
-                # print("length : ")
-                # print(length)
-                lab      = lab[:length]
+                lab = lab[:length]
                 lab_pred = lab_pred[:length]
-                accs    += [a==b for (a, b) in zip(lab, lab_pred)]
+                accs += [a==b for (a, b) in zip(lab, lab_pred)]
 
-                lab_chunks      = set(get_chunks(lab, self.config.vocab_tags))
+                lab_chunks = set(get_chunks(lab, self.config.vocab_tags))
                 lab_pred_chunks = set(get_chunks(lab_pred, self.config.vocab_tags))
 
-                # print("lab_chunks: ", get_chunks(lab, self.config.vocab_tags))
-                # print("lab_pred_chunks: ", get_chunks(lab_pred, self.config.vocab_tags))
-
                 correct_preds += len(lab_chunks & lab_pred_chunks)
-                total_preds   += len(lab_pred_chunks)
+                total_preds += len(lab_pred_chunks)
                 total_correct += len(lab_chunks)
 
-                # correct_preds += len(set(lab) & set(lab_pred))  # tp
-                # total_preds   += len(set(lab_pred)) #
-                # total_correct += len(set(lab))
-
-        # print("lab : ", lab)
-        # print("lab_pred : ", lab_pred)
-        # print("accs : ", accs)
         print("total_preds : ", total_preds)
         print("correct_preds : ", correct_preds)
         print("total_correct : ", total_correct)
 
-        # if total_preds > 0 and  total_correct > 0 and correct_preds > 0:
         if correct_preds > 0:
-            p   = correct_preds / total_preds #if correct_preds > 0 else 0
-            r   = correct_preds / total_correct #if correct_preds > 0 else 0
-            f1  = 2 * p * r / (p + r) #if correct_preds > 0 else 0
+            # Precision
+            p = correct_preds / total_preds
+
+            # Recall
+            r = correct_preds / total_correct
+
+            # F1 score
+            f1 = 2 * p * r / (p + r)
             acc = np.mean(accs)
 
             # Tensorboard visualization
@@ -364,7 +294,6 @@ class NERModel():
         return preds
 
 
-
     # performs an update on a batch
     # lr: learning rate
     # lr_method: sgd method name
@@ -373,16 +302,8 @@ class NERModel():
         _lr_m = lr_method.lower() # lower to make sure
 
         with tf.variable_scope("train_step"):
-            if _lr_m == 'adam': # sgd method
-                optimizer = tf.train.AdamOptimizer(lr)
-            elif _lr_m == 'adagrad':
-                optimizer = tf.train.AdagradOptimizer(lr)
-            elif _lr_m == 'sgd':
-                optimizer = tf.train.GradientDescentOptimizer(lr)
-            elif _lr_m == 'rmsprop':
-                optimizer = tf.train.RMSPropOptimizer(lr)
-            else:
-                raise NotImplementedError("Unknown method {}".format(_lr_m))
+            # Use AdamOptimizer
+            optimizer = tf.train.AdamOptimizer(lr)
 
             if clip > 0: # gradient clipping if clip is positive
                 grads, vs     = zip(*optimizer.compute_gradients(loss))
@@ -403,36 +324,33 @@ class NERModel():
     def train(self, train, dev):
 
         best_score = 0
-        nepoch_no_imprv = 0 # for early stopping
-        self.add_summary() # tensorboard
+        nepoch_no_imprv = 0
+        self.add_summary()
 
         for epoch in range(self.config.nepochs):
-            # self.logger.info("Epoch {:} out of {:}".format(epoch + 1,
-            #             self.config.nepochs))
+            print("TRAINING EPOCH ", epoch+1, "...")
             startTime = time.time()
             score = self.run_epoch(train, dev, epoch)
-            self.config.lr *= self.config.lr_decay # decay learning rate
+            self.config.lr *= self.config.lr_decay
 
             # early stopping and saving best parameters
             if score >= best_score:
                 nepoch_no_imprv = 0
                 self.save_session()
                 best_score = score
-                # self.logger.info("- new best score!")
             else:
                 nepoch_no_imprv += 1
                 if nepoch_no_imprv >= self.config.nepoch_no_imprv:
-                    # self.logger.info("- early stopping {} epochs without "\
-                    #         "improvement".format(nepoch_no_imprv))
                     break
 
             endTime = time.time()
             elapsedTime = endTime - startTime
             print("Time : ", elapsedTime)
+            print("TRAINING EPOCH ", epoch, " FINISHED\n")
 
     # Evaluation based on test dataset
     def evaluate(self, test):
-        self.logger.info("Testing model over test set")
+        self.logger.info("TESTING MODEL...")
         metrics = self.run_evaluate(test)
         msg = " - ".join(["{} {:04.2f}".format(k, v)
                 for k, v in metrics.items()])
@@ -440,5 +358,5 @@ class NERModel():
 
     # Load trained weight data
     def restore_session(self, dir_model):
-        self.logger.info("Reloading the latest trained model...")
+        self.logger.info("RESTORE MODEL...")
         self.saver.restore(self.sess, dir_model)

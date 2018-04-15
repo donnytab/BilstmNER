@@ -3,7 +3,7 @@ Load dataset and train BSLTM-SVM model
 '''
 from preprocess import get_vocabs, UNK, NUM, get_glove_vocab, write_vocab, load_vocab, get_char_vocab, export_trimmed_glove_vectors, get_processing_word
 from preprocess import DatasetHandler
-from bilstm_model import NERModel
+from bilstm_model import BilstmModel
 from param import Config
 
 if __name__ == "__main__":
@@ -37,10 +37,8 @@ if __name__ == "__main__":
 
     # build model
     train_config = Config()
-    model = NERModel(train_config)
+    model = BilstmModel(train_config)
     model.build()
-    # model.restore_session("results/crf/model.weights/") # optional, restore weights
-    # model.reinitialize_weights("proj")
 
     # create datasets
     dev = DatasetHandler(train_config.conll_dev, train_config.processing_word,train_config.processing_tag, train_config.max_iter)

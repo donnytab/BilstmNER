@@ -1,3 +1,6 @@
+'''
+Config Parameters for NER model
+'''
 import os
 import logging
 from preprocess import get_trimmed_glove_vectors, load_vocab, get_processing_word
@@ -24,13 +27,13 @@ class Config():
 
     # Training hyperparameters
     train_embeddings = False
-    nepochs          = 20
-    dropout          = 0.5
-    batch_size       = 30
-    lr_method        = "adam"
-    lr               = 0.001
-    lr_decay         = 0.9
-    clip             = -1 # if negative, no clipping
+    nepochs = 20
+    dropout = 0.5
+    batch_size = 30
+    lr_method = "adam"
+    lr = 0.001
+    lr_decay = 0.9
+    clip = -1
     nepoch_no_imprv  = 3
 
     #####################################
@@ -59,10 +62,8 @@ class Config():
         if not os.path.exists(self.dir_output):
             os.makedirs(self.dir_output)
 
-        # create instance of logger
         self.logger = getLogger(self.path_log)
 
-        # load if requested (default)
         if load:
             self.load()
 
@@ -76,7 +77,7 @@ class Config():
         self.nchars = len(self.vocab_chars)
         self.ntags = len(self.vocab_tags)
 
-        # Get processing functions that map str -> id
+        # Get processing words
         self.processing_word = get_processing_word(self.vocab_words,self.vocab_chars, lowercase=True, chars=self.use_chars)
         self.processing_tag = get_processing_word(self.vocab_tags, lowercase=False, allow_unk=False)
 
