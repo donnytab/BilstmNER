@@ -197,7 +197,7 @@ class BilstmModel():
         tf.summary.scalar("loss", self.loss)
 
         # Generic functions that add training op and initialize session
-        self.add_train_op(self.config.lr_method, self.lr, self.loss,self.config.clip)
+        self.add_train_op(self.lr, self.loss,self.config.clip)
         self.initialize_session()
 
 
@@ -300,9 +300,7 @@ class BilstmModel():
     # lr: learning rate
     # lr_method: sgd method name
     # clip: clipping of gradient. If < 0, no clipping
-    def add_train_op(self, lr_method, lr, loss, clip=-1):
-        _lr_m = lr_method.lower() # lower to make sure
-
+    def add_train_op(self, lr, loss, clip=-1):
         with tf.variable_scope("train_step"):
             # Use AdamOptimizer
             optimizer = tf.train.AdamOptimizer(lr)

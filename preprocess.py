@@ -1,8 +1,9 @@
+'''
+Dataset handler for word, char, sequence preprocessing
+'''
 import numpy as np
-import os
 
-
-# shared global variables to be imported from model also
+# shared global variables
 UNK = "$UNK$"
 NUM = "$NUM$"
 NONE = "O"
@@ -54,14 +55,13 @@ class DatasetHandler(object):
 
 # Generate vocabulary from dataset
 def get_vocabs(datasets):
-    print("Building vocab...")
     vocab_words = set()
     vocab_tags = set()
     for dataset in datasets:
         for words, tags in dataset:
             vocab_words.update(words)
             vocab_tags.update(tags)
-    print("- done. {} tokens".format(len(vocab_words)))
+    print("Building {} tokens from datasets".format(len(vocab_words)))
     return vocab_words, vocab_tags
 
 # Generate char vocabulary from dataset
@@ -75,25 +75,23 @@ def get_char_vocab(dataset):
 
 # Get GloVe vocabulary from dataset
 def get_glove_vocab(filename):
-    print("Building vocab...")
     vocab = set()
     with open(filename) as f:
         for line in f:
             word = line.strip().split(' ')[0]
             vocab.add(word)
-    print("- done. {} tokens".format(len(vocab)))
+    print("Building {} tokens from ".format(len(vocab)), str(filename))
     return vocab
 
 # Write vocabulary to file
 def write_vocab(vocab, filename):
-    print("Writing vocab...")
     with open(filename, "w") as f:
         for i, word in enumerate(vocab):
             if i != len(vocab) - 1:
                 f.write("{}\n".format(word))
             else:
                 f.write(word)
-    print("- done. {} tokens".format(len(vocab)))
+    print("Writing {} tokens to ".format(len(vocab)), str(filename))
 
 # load vocabulary from file
 def load_vocab(filename):
@@ -129,7 +127,7 @@ def get_trimmed_glove_vectors(filename):
 def get_processing_word(vocab_words=None, vocab_chars=None,
                     lowercase=False, chars=False, allow_unk=True):
     def f(word):
-        # 0. get chars of words
+        # get chars of words
         if vocab_chars is not None and chars == True:
             char_ids = []
             for char in word:
@@ -137,24 +135,21 @@ def get_processing_word(vocab_words=None, vocab_chars=None,
                 if char in vocab_chars:
                     char_ids += [vocab_chars[char]]
 
-        # 1. preprocess word
+        # preprocess word
         if lowercase:
             word = word.lower()
         if word.isdigit():
             word = NUM
 
-        # 2. get id of word
+        # get id of word
         if vocab_words is not None:
             if word in vocab_words:
                 word = vocab_words[word]
             else:
                 if allow_unk:
                     word = vocab_words[UNK]
-                else:
-                    raise Exception("Unknow key is not allowed. Check that "\
-                                    "your vocab (tags?) is correct")
 
-        # 3. return tuple char ids, word id
+        # return tuple char ids, word id
         if vocab_chars is not None and chars == True:
             return char_ids, word
         else:
@@ -164,14 +159,6 @@ def get_processing_word(vocab_words=None, vocab_chars=None,
 
 
 def _pad_sequences(sequences, pad_tok, max_length):
-    """
-    Args:
-        sequences: a generator of list or tuple
-        pad_tok: the char to pad with
-
-    Returns:
-        a list of list where each sublist has same length
-    """
     sequence_padded, sequence_length = [], []
 
     for seq in sequences:
@@ -184,16 +171,6 @@ def _pad_sequences(sequences, pad_tok, max_length):
 
 
 def pad_sequences(sequences, pad_tok, nlevels=1):
-    """
-    Args:
-        sequences: a generator of list or tuple
-        pad_tok: the char to pad with
-        nlevels: "depth" of padding, for the case where we have characters ids
-
-    Returns:
-        a list of list where each sublist has same length
-
-    """
     if nlevels == 1:
         max_length = max(map(lambda x : len(x), sequences))
         sequence_padded, sequence_length = _pad_sequences(sequences,
@@ -255,7 +232,7 @@ def get_chunks(seq, tags):
             chunks.append(chunk)
             chunk_type, chunk_start = None, None
 
-        # End of a chunk + start of a chunk!
+        # End of a chunk & start of a chunk
         elif tok != default:
             tok_chunk_class, tok_chunk_type = get_chunk_type(tok, idx_to_tag)
             if chunk_type is None:
