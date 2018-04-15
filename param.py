@@ -15,9 +15,8 @@ class Config():
     ######## Manual Config Setup ########
 
     # GloVe Path setup
-    glove_path = "../"   # Resource path to be changed. For this config, we setup GloVe files outside of this project
-    output_glove = glove_path + "glove.6B/glove.6B.{}d.txt".format(dim_word)
-    output_trimmed = glove_path + "glove.6B.{}d.trimmed.npz".format(dim_word)
+    output_glove = "glove.6B/glove.6B.{}d.txt".format(dim_word)
+    output_trimmed = "glove.6B.{}d.trimmed.npz".format(dim_word)
 
     # Decoding layer options
     use_multiclass_svm = True
